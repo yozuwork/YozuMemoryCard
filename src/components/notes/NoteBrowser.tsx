@@ -244,7 +244,7 @@ export function NoteBrowser({
       {cards && cards.length > 0 && <SearchField value={query} onChange={setQuery} placeholder="搜尋筆記" className="mb-4" />}
 
       {!visible ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-busy="true" aria-label="載入中">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-busy="true" aria-label="載入中">
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="h-[148px] rounded-[22px]" />
           ))}
@@ -291,7 +291,7 @@ export function NoteBrowser({
               }
             />
           ) : (
-            <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               <AnimatePresence initial={false}>
                 {visible.slice(0, limit).map((card) => (
                   <motion.li

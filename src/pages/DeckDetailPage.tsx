@@ -7,9 +7,9 @@ import { useSettings } from '../store/settings'
 import { confirmDialog, toast } from '../store/ui'
 import { deleteDeck } from '../db/repo'
 import { computeDeckStats } from '../lib/deckStats'
-import { gradientOf } from '../lib/deckColors'
 import { NoteBrowser } from '../components/notes/NoteBrowser'
 import { DeckFormDialog } from '../components/deck/DeckFormDialog'
+import { DeckCover } from '../components/deck/DeckCover'
 import { EmptyState } from '../components/ui/EmptyState'
 import { buttonClasses } from '../components/ui/buttonStyles'
 
@@ -85,7 +85,7 @@ export function DeckDetailPage() {
       >
         {deck && (
           <section className="mb-6 overflow-hidden rounded-[22px] bg-surface shadow-card" aria-label="牌組概況">
-            <div className="h-1.5" style={{ background: gradientOf(deck.color) }} aria-hidden />
+            <DeckCover deck={deck} className="aspect-[16/7] w-full sm:aspect-auto sm:h-56" />
             <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
               <dl className="grid flex-1 grid-cols-4 gap-2 text-center">
                 {[

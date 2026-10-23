@@ -25,11 +25,24 @@ export async function updateDeck(id: string, patch: Partial<Pick<Deck, 'name' | 
   await db.decks.update(id, { ...patch, updatedAt: Date.now() })
 }
 
+/** `Blob` uploads a custom cover, `null` restores the default one. */
+export async function setDeckCover(id: string, blob: Blob | null) {
+  await db.transaction('rw', [db.decks, db.media], async () => {
+    const deck = await db.decks.get(id)
+    if (!deck) return
+    if (deck.coverImage) await db.media.delete(deck.coverImage)
+    const coverImage = blob ? await storeMedia(blob) : undefined
+    await db.decks.update(id, { coverImage, updatedAt: Date.now() })
+  })
+}
+
 /** Deletes the deck together with its cards, their images and review history. */
 export async function deleteDeck(id: string) {
   await db.transaction('rw', [db.decks, db.cards, db.media, db.reviews], async () => {
     const ids = await db.cards.where('deckId').equals(id).primaryKeys()
     await removeCards(ids)
+    const cover = (await db.decks.get(id))?.coverImage
+    if (cover) await db.media.delete(cover)
     await db.decks.delete(id)
   })
 }
@@ -186,6 +199,17 @@ export async function findTagByName(name: string): Promise<Tag | undefined> {
 }
 
 /* ---------------------------------------------------------------- wipe-out */
+
+/** Turns every card back into a new card and deletes all review history. Content is kept. */
+export async function resetAllProgress() {
+  const now = Date.now()
+  await db.transaction('rw', [db.cards, db.reviews], async () => {
+    await db.cards.toCollection().modify((c) => {
+      Object.assign(c, newSchedule(now), { updatedAt: now })
+    })
+    await db.reviews.clear()
+  })
+}
 
 export async function clearAllData() {
   await db.transaction('rw', [db.decks, db.cards, db.tags, db.reviews, db.media], async () => {

@@ -1,8 +1,12 @@
-import { useId, useState, type FormEvent } from 'react'
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { ImagePlus, RotateCcw } from 'lucide-react'
 import { Modal } from '../ui/Modal'
 import { FieldWrapper, TextInput } from '../ui/Field'
 import { ColorPicker } from '../ui/ColorPicker'
-import { createDeck, updateDeck } from '../../db/repo'
+import { Button } from '../ui/Button'
+import { DeckCover } from './DeckCover'
+import { createDeck, setDeckCover, updateDeck } from '../../db/repo'
+import { prepareImage } from '../../lib/image'
 import { colorNames, type ColorName } from '../../lib/deckColors'
 import { toast } from '../../store/ui'
 import type { Deck } from '../../types/deck'
@@ -57,6 +61,10 @@ function DeckForm({
   const [description, setDescription] = useState(deck?.description ?? '')
   const [color, setColor] = useState<ColorName>(deck?.color ?? colorNames[existingNames.length % colorNames.length])
   const [tried, setTried] = useState(false)
+  /** `Blob` = new upload, `null` = back to the default cover, `undefined` = unchanged. */
+  const [cover, setCover] = useState<Blob | null>()
+  const coverUrl = useObjectUrl(cover ?? undefined)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const trimmed = name.trim()
   const duplicate = existingNames.some((n) => n.toLowerCase() === trimmed.toLowerCase() && n !== deck?.name)
@@ -70,17 +78,59 @@ function DeckForm({
     if (!trimmed || duplicate) return
     if (deck) {
       await updateDeck(deck.id, { name: trimmed, description: description.trim(), color })
+      if (cover !== undefined) await setDeckCover(deck.id, cover)
       toast('已更新牌組', { tone: 'success' })
     } else {
       const created = await createDeck({ name: trimmed, description, color })
+      if (cover) await setDeckCover(created.id, cover)
       toast(`已建立「${created.name}」`, { tone: 'success' })
       onCreated?.(created)
     }
     onDone()
   }
 
+  async function pick(file: File | undefined) {
+    if (!file) return
+    try {
+      setCover(await prepareImage(file))
+    } catch (e) {
+      toast(e instanceof Error ? e.message : '無法讀取圖片', { tone: 'error' })
+    }
+  }
+
+  const hasCustom = cover === undefined ? Boolean(deck?.coverImage) : cover !== null
+
   return (
     <form id={id} onSubmit={submit} className="flex flex-col gap-5" noValidate>
+      <div>
+        <p className="mb-1.5 px-1 text-[13px] font-medium text-ink-2">封面</p>
+        <DeckCover
+          deck={{ name: trimmed || '牌組', color, packKey: deck?.packKey, coverImage: cover === null ? undefined : deck?.coverImage }}
+          previewUrl={coverUrl}
+          className="aspect-[16/7] w-full rounded-[18px]"
+        />
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          <Button type="button" variant="secondary" size="sm" icon={<ImagePlus size={16} />} onClick={() => fileRef.current?.click()}>
+            {hasCustom ? '更換封面' : '上傳封面'}
+          </Button>
+          {hasCustom && (
+            <Button type="button" variant="ghost" size="sm" icon={<RotateCcw size={16} />} onClick={() => setCover(null)}>
+              使用預設封面
+            </Button>
+          )}
+        </div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          tabIndex={-1}
+          onChange={(e) => {
+            void pick(e.target.files?.[0])
+            e.target.value = ''
+          }}
+        />
+      </div>
       <FieldWrapper label="名稱" htmlFor="deck-name" error={error}>
         <TextInput
           id="deck-name"
@@ -106,4 +156,18 @@ function DeckForm({
       <ColorPicker value={color} onChange={setColor} label="顏色" />
     </form>
   )
+}
+
+function useObjectUrl(blob: Blob | undefined): string | undefined {
+  const [url, setUrl] = useState<string>()
+  useEffect(() => {
+    if (!blob) {
+      setUrl(undefined)
+      return
+    }
+    const u = URL.createObjectURL(blob)
+    setUrl(u)
+    return () => URL.revokeObjectURL(u)
+  }, [blob])
+  return url
 }

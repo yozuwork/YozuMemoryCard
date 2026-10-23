@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5AA6FF"/>
+      <stop offset="1" stop-color="#BFE0FF"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DCE6F2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#sky)"/>
+  <!-- Mt. Fuji -->
+  <path d="M250 250 L372 112 Q380 104 388 112 L520 250 Z" fill="#7B93C9"/>
+  <path d="M340 148 L372 112 Q380 104 388 112 L420 148 L404 140 L392 152 L380 138 L366 152 L354 140 Z" fill="#FFFFFF"/>
+  <circle cx="540" cy="70" r="30" fill="#FFE7A3" opacity="0.9"/>
+  <!-- clouds -->
+  <g fill="#FFFFFF" opacity="0.85">
+    <ellipse cx="110" cy="80" rx="50" ry="16"/>
+    <ellipse cx="140" cy="68" rx="32" ry="18"/>
+    <ellipse cx="460" cy="40" rx="40" ry="12"/>
+  </g>
+  <!-- city skyline -->
+  <g fill="#9DB7DF">
+    <rect x="0" y="196" width="40" height="64"/>
+    <rect x="44" y="170" width="30" height="90"/>
+    <rect x="80" y="210" width="46" height="50"/>
+    <rect x="540" y="184" width="36" height="76"/>
+    <rect x="580" y="204" width="60" height="56"/>
+  </g>
+  <!-- platform -->
+  <rect x="0" y="260" width="640" height="100" fill="#3D4B66"/>
+  <rect x="0" y="300" width="640" height="10" fill="#F5C842"/>
+  <g fill="#2B364C">
+    <rect x="0" y="318" width="640" height="6"/>
+    <rect x="0" y="340" width="640" height="6"/>
+  </g>
+  <!-- shinkansen -->
+  <g>
+    <path d="M40 216 H470 Q560 216 610 270 H40 Z" fill="url(#body)"/>
+    <path d="M40 254 H596 Q603 262 610 270 H40 Z" fill="#1F5FBF"/>
+    <rect x="40" y="246" width="560" height="5" fill="#2F8CFF"/>
+    <path d="M490 226 Q540 228 572 250 H490 Z" fill="#1B2A44"/>
+    <g fill="#1B2A44">
+      <rect x="70" y="228" width="34" height="16" rx="4"/>
+      <rect x="116" y="228" width="34" height="16" rx="4"/>
+      <rect x="162" y="228" width="34" height="16" rx="4"/>
+      <rect x="208" y="228" width="34" height="16" rx="4"/>
+      <rect x="254" y="228" width="34" height="16" rx="4"/>
+      <rect x="300" y="228" width="34" height="16" rx="4"/>
+      <rect x="346" y="228" width="34" height="16" rx="4"/>
+      <rect x="392" y="228" width="34" height="16" rx="4"/>
+      <rect x="438" y="228" width="34" height="16" rx="4"/>
+    </g>
+    <rect x="40" y="270" width="570" height="8" fill="#2B364C"/>
+  </g>
+  <!-- station sign -->
+  <g transform="translate(208 128)">
+    <rect x="-2" y="40" width="6" height="48" fill="#5B6B88"/>
+    <rect x="114" y="40" width="6" height="48" fill="#5B6B88"/>
+    <rect x="-20" y="0" width="160" height="48" rx="8" fill="#FFFFFF"/>
+    <rect x="-20" y="34" width="160" height="14" rx="0" fill="#2FA84F"/>
+    <text x="60" y="29" text-anchor="middle" font-family="'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif" font-size="24" font-weight="700" fill="#1B2A44">駅 えき</text>
+  </g>
+</svg>

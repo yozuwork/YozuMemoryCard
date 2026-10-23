@@ -5,6 +5,10 @@ export interface Deck {
   name: string
   description: string
   color: ColorName
+  /** Built-in pack this deck came from; selects its default cover. */
+  packKey?: string
+  /** Media table id of a user-uploaded cover. */
+  coverImage?: string
   createdAt: number
   updatedAt: number
 }

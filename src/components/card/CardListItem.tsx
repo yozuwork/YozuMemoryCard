@@ -171,6 +171,7 @@ export function CardListItem({
             )}
           </div>
           {card.back && <p className="mt-1 line-clamp-1 text-[15px] text-ink-2">{card.back}</p>}
+          {card.extra && <p className="mt-0.5 line-clamp-1 text-[13px] text-ink-2">例：{card.extra}</p>}
 
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[14px] font-medium text-ink-2">
             <span>重複 {card.reps}</span>

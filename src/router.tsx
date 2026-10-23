@@ -16,6 +16,7 @@ export const router = createBrowserRouter([
       { path: 'record', element: <CardEditorPage /> },
       { path: 'notes', element: <NotesPage /> },
       { path: 'notes/card/:cardId', element: <EditCardRoute /> },
+      { path: 'character', lazy: async () => ({ Component: (await import('./pages/CharacterPage')).CharacterPage }) },
       { path: 'stats', lazy: async () => ({ Component: (await import('./pages/StatsPage')).StatsPage }) },
       { path: 'decks', lazy: async () => ({ Component: (await import('./pages/DecksPage')).DecksPage }) },
       { path: 'decks/:deckId', lazy: async () => ({ Component: (await import('./pages/DeckDetailPage')).DeckDetailPage }) },

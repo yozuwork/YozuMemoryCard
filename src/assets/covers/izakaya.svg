@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <radialGradient id="glow" cx="0.5" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#6B3A1E"/>
+      <stop offset="1" stop-color="#241109"/>
+    </radialGradient>
+    <radialGradient id="lantern" cx="0.4" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#FF8A5C"/>
+      <stop offset="0.6" stop-color="#E23B2E"/>
+      <stop offset="1" stop-color="#A51F1A"/>
+    </radialGradient>
+    <linearGradient id="beer" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC94A"/>
+      <stop offset="1" stop-color="#E8932A"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#glow)"/>
+  <!-- wooden slats -->
+  <g fill="#000000" opacity="0.18">
+    <rect x="0" y="0" width="640" height="6"/>
+    <rect x="0" y="40" width="640" height="3"/>
+  </g>
+  <!-- noren curtain -->
+  <rect x="0" y="0" width="640" height="16" fill="#3A1E10"/>
+  <g fill="#1F2E4A">
+    <rect x="150" y="16" width="64" height="86"/>
+    <rect x="218" y="16" width="64" height="86"/>
+    <rect x="286" y="16" width="64" height="86"/>
+    <rect x="354" y="16" width="64" height="86"/>
+    <rect x="422" y="16" width="64" height="86"/>
+  </g>
+  <text x="318" y="78" text-anchor="middle" font-family="'Hiragino Mincho ProN','Noto Serif JP','Yu Mincho',serif" font-size="40" font-weight="700" fill="#F4EBDD" letter-spacing="34">居酒屋</text>
+  <!-- lanterns -->
+  <g>
+    <line x1="80" y1="16" x2="80" y2="60" stroke="#2A140A" stroke-width="3"/>
+    <rect x="62" y="56" width="36" height="10" rx="2" fill="#2A140A"/>
+    <ellipse cx="80" cy="128" rx="46" ry="64" fill="url(#lantern)"/>
+    <g stroke="#8A1A14" stroke-width="2" fill="none" opacity="0.6">
+      <path d="M38 100 Q80 92 122 100"/><path d="M35 128 Q80 120 125 128"/><path d="M38 156 Q80 148 122 156"/>
+    </g>
+    <rect x="62" y="188" width="36" height="10" rx="2" fill="#2A140A"/>
+    <text x="80" y="142" text-anchor="middle" font-family="'Hiragino Mincho ProN','Noto Serif JP','Yu Mincho',serif" font-size="40" font-weight="700" fill="#1A0B06">酒</text>
+  </g>
+  <g>
+    <line x1="560" y1="16" x2="560" y2="60" stroke="#2A140A" stroke-width="3"/>
+    <rect x="542" y="56" width="36" height="10" rx="2" fill="#2A140A"/>
+    <ellipse cx="560" cy="128" rx="46" ry="64" fill="url(#lantern)"/>
+    <g stroke="#8A1A14" stroke-width="2" fill="none" opacity="0.6">
+      <path d="M518 100 Q560 92 602 100"/><path d="M515 128 Q560 120 605 128"/><path d="M518 156 Q560 148 602 156"/>
+    </g>
+    <rect x="542" y="188" width="36" height="10" rx="2" fill="#2A140A"/>
+    <text x="560" y="142" text-anchor="middle" font-family="'Hiragino Mincho ProN','Noto Serif JP','Yu Mincho',serif" font-size="40" font-weight="700" fill="#1A0B06">串</text>
+  </g>
+  <!-- counter -->
+  <rect x="0" y="262" width="640" height="98" fill="#8B5A2B"/>
+  <rect x="0" y="262" width="640" height="10" fill="#A8713A"/>
+  <!-- plate with yakitori -->
+  <ellipse cx="300" cy="270" rx="150" ry="26" fill="#F4EBDD"/>
+  <ellipse cx="300" cy="266" rx="132" ry="18" fill="#FFFFFF"/>
+  <g transform="rotate(-8 300 250)">
+    <rect x="170" y="244" width="250" height="4" rx="2" fill="#E8D3A8"/>
+    <g fill="#8C4A1E">
+      <rect x="200" y="232" width="34" height="28" rx="10"/>
+      <rect x="240" y="232" width="34" height="28" rx="10"/>
+      <rect x="320" y="232" width="34" height="28" rx="10"/>
+    </g>
+    <rect x="280" y="236" width="34" height="20" rx="8" fill="#7FB547"/>
+  </g>
+  <g transform="rotate(-4 300 268)">
+    <rect x="186" y="262" width="250" height="4" rx="2" fill="#E8D3A8"/>
+    <g fill="#B5652A">
+      <circle cx="232" cy="262" r="15"/>
+      <circle cx="266" cy="262" r="15"/>
+      <circle cx="300" cy="262" r="15"/>
+      <circle cx="334" cy="262" r="15"/>
+    </g>
+  </g>
+  <!-- beer mug -->
+  <g transform="translate(470 168)">
+    <path d="M70 34 h22 a18 18 0 0 1 18 18 v34 a18 18 0 0 1 -18 18 h-22" fill="none" stroke="#F4EBDD" stroke-width="10" opacity="0.85"/>
+    <rect x="0" y="28" width="76" height="102" rx="8" fill="url(#beer)"/>
+    <rect x="0" y="28" width="76" height="102" rx="8" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.6"/>
+    <g fill="#FFFFFF">
+      <circle cx="12" cy="28" r="16"/><circle cx="34" cy="20" r="18"/><circle cx="58" cy="24" r="17"/><circle cx="72" cy="32" r="12"/>
+    </g>
+    <g fill="#FFFFFF" opacity="0.5">
+      <circle cx="22" cy="80" r="3"/><circle cx="44" cy="96" r="2.5"/><circle cx="52" cy="66" r="2"/>
+    </g>
+  </g>
+  <!-- edamame bowl -->
+  <g transform="translate(60 230)">
+    <path d="M0 24 h110 a55 34 0 0 1 -110 0 Z" fill="#2E3E5C"/>
+    <g fill="#7FB547">
+      <ellipse cx="30" cy="20" rx="20" ry="9" transform="rotate(-20 30 20)"/>
+      <ellipse cx="58" cy="16" rx="20" ry="9" transform="rotate(10 58 16)"/>
+      <ellipse cx="82" cy="20" rx="20" ry="9" transform="rotate(-10 82 20)"/>
+    </g>
+  </g>
+</svg>

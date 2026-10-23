@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from './schema'
-import { createDeck, createTag, deleteDeck, deleteTag, rateCard, saveCard, undoReview } from './repo'
+import { createDeck, createTag, deleteDeck, setDeckCover, deleteTag, rateCard, resetAllProgress, saveCard, undoReview } from './repo'
 import { buildBackup, importBackup, parseBackup } from './backup'
 import { CardState, Rating } from '../types/card'
 
@@ -74,6 +74,19 @@ describe('repository', () => {
     expect(await db.reviews.count()).toBe(0)
   })
 
+  it('resetting progress makes every card new and clears history but keeps content', async () => {
+    const deck = await createDeck({ name: 'English', color: 'rose' })
+    const card = await saveCard(null, content(deck.id), {})
+    await rateCard(card, Rating.Good, { now: Date.now(), retention: 0.9, durationMs: 1 })
+    await resetAllProgress()
+    const stored = await db.cards.get(card.id)
+    expect(stored?.state).toBe(CardState.New)
+    expect(stored?.reps).toBe(0)
+    expect(stored?.front).toBe('hello')
+    expect(await db.reviews.count()).toBe(0)
+    expect(await db.decks.count()).toBe(1)
+  })
+
   it('round-trips a full backup including images', async () => {
     const deck = await createDeck({ name: 'Backup', color: 'teal' })
     await saveCard(null, content(deck.id), { front: new Blob([new Uint8Array([1, 2, 3])], { type: 'image/png' }) })
@@ -89,5 +102,28 @@ describe('repository', () => {
 
   it('rejects files that are not backups', () => {
     expect(() => parseBackup({ hello: 1 })).toThrow()
+  })
+
+  it('stores, replaces and removes a custom deck cover', async () => {
+    const deck = await createDeck({ name: 'Covers', color: 'teal' })
+    await setDeckCover(deck.id, new Blob(['a'], { type: 'image/png' }))
+    const first = (await db.decks.get(deck.id))?.coverImage
+    expect(first && (await db.media.get(first))).toBeTruthy()
+
+    await setDeckCover(deck.id, new Blob(['b'], { type: 'image/png' }))
+    const second = (await db.decks.get(deck.id))?.coverImage
+    expect(second).not.toBe(first)
+    expect(await db.media.get(first!)).toBeUndefined()
+
+    const backup = parseBackup(JSON.parse(JSON.stringify(await buildBackup())))
+    expect(backup.decks[0].coverImage).toBe(second)
+
+    await setDeckCover(deck.id, null)
+    expect((await db.decks.get(deck.id))?.coverImage).toBeUndefined()
+    expect(await db.media.count()).toBe(0)
+
+    await setDeckCover(deck.id, new Blob(['c'], { type: 'image/png' }))
+    await deleteDeck(deck.id)
+    expect(await db.media.count()).toBe(0)
   })
 })

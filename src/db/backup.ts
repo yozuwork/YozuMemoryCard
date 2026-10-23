@@ -97,6 +97,8 @@ export function parseBackup(raw: unknown): BackupFile {
       name: str(d.name),
       description: str(d.description),
       color: color(d.color),
+      ...(typeof d.packKey === 'string' && { packKey: d.packKey }),
+      ...(typeof d.coverImage === 'string' && { coverImage: d.coverImage }),
       createdAt: num(d.createdAt, now),
       updatedAt: num(d.updatedAt, now),
     }))

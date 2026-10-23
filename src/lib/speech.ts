@@ -60,6 +60,11 @@ function pickVoice(lang: string): SpeechSynthesisVoice | undefined {
   )
 }
 
+/** Drops full-width parenthesised translations so only the example itself is read: "駅はどこですか。（車站在哪？）" → "駅はどこですか。" */
+export function exampleSpeechText(text: string): string {
+  return text.replace(/（[^）]*）/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 export function stopSpeaking() {
   if (isSpeechSupported()) window.speechSynthesis.cancel()
 }

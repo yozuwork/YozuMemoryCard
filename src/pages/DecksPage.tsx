@@ -5,6 +5,8 @@ import { useCards, useDecks } from '../hooks/useData'
 import { useNow } from '../hooks/useEnvironment'
 import { useSettings } from '../store/settings'
 import { computeDeckStats, groupByDeck } from '../lib/deckStats'
+import { deckLanguage, languageFilterLabels } from '../lib/cardLanguage'
+import { useNotesLanguage } from '../store/notesLanguage'
 import { PageHeader } from '../components/layout/PageHeader'
 import { NotesSegment } from '../components/notes/NotesSegment'
 import { DeckCard } from '../components/deck/DeckCard'
@@ -23,9 +25,14 @@ export function DecksPage() {
   const dayStartHour = useSettings((s) => s.dayStartHour)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [query, setQuery] = useState('')
+  const language = useNotesLanguage((s) => s.language)
 
   const byDeck = useMemo(() => groupByDeck(cards ?? []), [cards])
-  const visible = (decks ?? []).filter((d) => d.name.toLowerCase().includes(query.trim().toLowerCase()))
+  const visible = (decks ?? []).filter(
+    (d) =>
+      (language === 'all' || deckLanguage(byDeck.get(d.id) ?? []) === language) &&
+      d.name.toLowerCase().includes(query.trim().toLowerCase()),
+  )
 
   return (
     <div>
@@ -42,9 +49,9 @@ export function DecksPage() {
       {decks && decks.length > 3 && <SearchField value={query} onChange={setQuery} placeholder="搜尋牌組" className="mb-4" />}
 
       {!decks || !cards ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-busy="true">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-busy="true">
           {[0, 1].map((i) => (
-            <Skeleton key={i} className="h-[196px] rounded-[22px]" />
+            <Skeleton key={i} className="h-[340px] rounded-[22px]" />
           ))}
         </div>
       ) : decks.length === 0 ? (
@@ -60,8 +67,13 @@ export function DecksPage() {
         />
       ) : (
         <>
-          <p className="mb-3 px-1 text-[15px] font-medium text-ink-2">{visible.length} 個牌組</p>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <p className="mb-3 px-1 text-[15px] font-medium text-ink-2">
+            {language === 'all' ? `${visible.length} 個牌組` : `${visible.length} 個${languageFilterLabels[language]}牌組`}
+          </p>
+          {visible.length === 0 && language !== 'all' && (
+            <p className="px-1 py-8 text-center text-[15px] text-ink-2">沒有以{languageFilterLabels[language]}為主的牌組</p>
+          )}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {visible.map((deck) => (
               <DeckCard key={deck.id} deck={deck} stats={computeDeckStats(byDeck.get(deck.id) ?? [], now, dayStartHour)} />
             ))}

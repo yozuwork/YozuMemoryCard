@@ -6,6 +6,7 @@ import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import { MiniPlayer } from './MiniPlayer'
 import { ConfirmHost, Toaster } from '../ui/Feedback'
+import { ProgressFeedback } from '../character/ProgressFeedback'
 import { usesGroupedBackground } from '../../lib/navigation'
 
 export function AppShell() {
@@ -48,6 +49,7 @@ export function AppShell() {
       <BottomNav />
       <Toaster />
       <ConfirmHost />
+      <ProgressFeedback />
     </div>
   )
 }

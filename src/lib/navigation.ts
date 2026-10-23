@@ -1,4 +1,4 @@
-import { ChartColumn, Clock3, List, Settings, SquarePen, Tag } from 'lucide-react'
+import { ChartColumn, Clock3, List, Settings, SquarePen, Swords, Tag } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface NavItem {
@@ -11,6 +11,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { to: '/review', label: '複習', icon: Clock3, match: ['/review', '/stats'] },
+  { to: '/character', label: '角色', icon: Swords, match: ['/character'] },
   { to: '/record', label: '記錄', icon: SquarePen, match: ['/record'] },
   { to: '/notes', label: '筆記', icon: List, match: ['/notes', '/decks'] },
   { to: '/tags', label: '標籤', icon: Tag, match: ['/tags'] },
@@ -26,5 +27,5 @@ export function isActive(item: NavItem, pathname: string): boolean {
 
 /** Routes that sit on the grey "grouped" background instead of plain white. */
 export function usesGroupedBackground(pathname: string): boolean {
-  return ['/notes', '/decks', '/settings', '/stats'].some((p) => pathname === p || pathname.startsWith(`${p}/`))
+  return ['/notes', '/decks', '/settings', '/stats', '/character'].some((p) => pathname === p || pathname.startsWith(`${p}/`))
 }

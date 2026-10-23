@@ -54,7 +54,7 @@ export function EditorBlock({
       <div className={clsx('mx-5 flex min-h-[62px] items-center gap-3 py-2', !collapsed && 'border-b border-line')}>
         <h2 className="text-[17px] font-semibold text-ink">{title}</h2>
         {optional && <span className="rounded-md bg-fill px-2 py-0.5 text-[12px] font-medium text-ink-2">可選</span>}
-        <div className="ml-auto flex items-center">
+        <div className="ml-auto flex items-center gap-1">
           {action}
           {onPickImage && (
             <>

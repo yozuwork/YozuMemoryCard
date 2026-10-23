@@ -2,9 +2,11 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
 import clsx from 'clsx'
-import { ChevronDown, ChevronLeft, RotateCcw, Star, Tag as TagIcon, Trash2, Ellipsis } from 'lucide-react'
+import { ChevronDown, ChevronLeft, RotateCcw, Star, Tag as TagIcon, Trash2, Ellipsis, Volume2 } from 'lucide-react'
 import { useCard, useDecks, useTags } from '../hooks/useData'
 import { useUnsavedGuard } from '../hooks/useUnsavedGuard'
+import { useSpeech } from '../hooks/useSpeech'
+import { exampleSpeechText } from '../lib/speech'
 import { deleteCards, ensureDeck, resetCards, saveCard } from '../db/repo'
 import { confirmDialog, toast } from '../store/ui'
 import { getColor } from '../lib/deckColors'
@@ -131,6 +133,19 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
   const [tagsOpen, setTagsOpen] = useState(false)
   const [extraOpen, setExtraOpen] = useState(Boolean(card?.extra))
   const frontRef = useRef<HTMLTextAreaElement>(null)
+  const speech = useSpeech()
+  const speakButton = (text: string, label: string) =>
+    speech.supported &&
+    text.trim() && (
+      <button
+        type="button"
+        onClick={() => void speech.say(text)}
+        aria-label={label}
+        className="flex size-11 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-fill-2 hover:text-ink"
+      >
+        <Volume2 size={21} />
+      </button>
+    )
 
   const dirty = !sameForm(form, baseline)
   const { allowNext } = useUnsavedGuard(dirty && !saving)
@@ -349,6 +364,7 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
       <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
         <EditorBlock
           title="卡片正面"
+          action={speakButton(form.front, '朗讀正面')}
           onPickImage={(b) => set('frontBlob', b)}
           error={frontError}
         >
@@ -381,7 +397,10 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
           </div>
         </EditorBlock>
 
-        <EditorBlock title="卡片背面" onPickImage={(b) => set('backBlob', b)} error={backError} className="lg:row-span-2">
+        <EditorBlock
+          title="卡片背面"
+          action={speakButton(form.back, '朗讀背面')}
+          onPickImage={(b) => set('backBlob', b)} error={backError} className="lg:row-span-2">
           <ImagePreview blob={form.backBlob} storedId={card?.backImage} onRemove={() => set('backBlob', null)} alt="背面圖片預覽" />
           <label htmlFor="card-back" className="sr-only">
             卡片背面
@@ -402,16 +421,19 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
           title="額外資訊"
           optional
           action={
-            <button
-              type="button"
-              onClick={() => setExtraOpen((o) => !o)}
-              aria-expanded={extraOpen}
-              aria-controls="extra-panel"
-              aria-label={extraOpen ? '收合額外資訊' : '展開額外資訊'}
-              className="flex size-11 items-center justify-center rounded-full text-ink hover:bg-fill-2"
-            >
-              <ChevronDown size={22} className={clsx('transition-transform duration-300', !extraOpen && 'rotate-180')} />
-            </button>
+            <>
+              {speakButton(exampleSpeechText(form.extra), '朗讀例句')}
+              <button
+                type="button"
+                onClick={() => setExtraOpen((o) => !o)}
+                aria-expanded={extraOpen}
+                aria-controls="extra-panel"
+                aria-label={extraOpen ? '收合額外資訊' : '展開額外資訊'}
+                className="flex size-11 items-center justify-center rounded-full text-ink hover:bg-fill-2"
+              >
+                <ChevronDown size={22} className={clsx('transition-transform duration-300', !extraOpen && 'rotate-180')} />
+              </button>
+            </>
           }
           collapsed={!extraOpen}
           bodyId="extra-panel"

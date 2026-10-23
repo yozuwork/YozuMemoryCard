@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB38F"/>
+      <stop offset="1" stop-color="#F2694B"/>
+    </linearGradient>
+    <linearGradient id="bowl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C62F28"/>
+      <stop offset="1" stop-color="#8E1B17"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <!-- ticket machine buttons (食券機) -->
+  <g transform="translate(26 30)">
+    <rect width="150" height="300" rx="14" fill="#F4F1EA"/>
+    <rect x="12" y="12" width="126" height="34" rx="6" fill="#20283A"/>
+    <text x="75" y="36" text-anchor="middle" font-family="'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif" font-size="18" font-weight="700" fill="#FFD25A">食券</text>
+    <g font-family="'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="#20283A">
+      <rect x="12" y="58" width="60" height="44" rx="6" fill="#FFD25A"/><text x="42" y="85">ラーメン</text>
+      <rect x="78" y="58" width="60" height="44" rx="6" fill="#FF9D3C"/><text x="108" y="85">大盛り</text>
+      <rect x="12" y="110" width="60" height="44" rx="6" fill="#FFFFFF"/><text x="42" y="137">替え玉</text>
+      <rect x="78" y="110" width="60" height="44" rx="6" fill="#FFFFFF"/><text x="108" y="137">味玉</text>
+      <rect x="12" y="162" width="60" height="44" rx="6" fill="#C9E6A8"/><text x="42" y="189">ライス</text>
+      <rect x="78" y="162" width="60" height="44" rx="6" fill="#C9E6A8"/><text x="108" y="189">定食</text>
+    </g>
+    <rect x="30" y="226" width="90" height="16" rx="8" fill="#20283A"/>
+    <rect x="44" y="256" width="62" height="26" rx="6" fill="#D9D4C8"/>
+  </g>
+  <!-- steam -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" opacity="0.65">
+    <path d="M340 92 q-16 -22 0 -44 q16 -22 0 -44"/>
+    <path d="M400 100 q-16 -24 0 -48 q16 -24 0 -44"/>
+    <path d="M460 92 q-16 -22 0 -44 q16 -22 0 -44"/>
+  </g>
+  <!-- chopsticks -->
+  <g stroke-linecap="round">
+    <line x1="500" y1="40" x2="380" y2="200" stroke="#7A4A22" stroke-width="10"/>
+    <line x1="560" y1="56" x2="410" y2="206" stroke="#94602F" stroke-width="10"/>
+  </g>
+  <!-- bowl -->
+  <ellipse cx="400" cy="200" rx="190" ry="44" fill="#F6E7C4"/>
+  <!-- noodles & toppings -->
+  <ellipse cx="400" cy="200" rx="172" ry="34" fill="#E8B865"/>
+  <g fill="none" stroke="#F7D78E" stroke-width="4" stroke-linecap="round">
+    <path d="M260 204 q30 -14 60 0 t60 0 t60 0 t60 0"/>
+    <path d="M280 214 q30 -14 60 0 t60 0 t60 0"/>
+  </g>
+  <!-- chashu -->
+  <ellipse cx="320" cy="192" rx="44" ry="20" fill="#C98A5B"/>
+  <ellipse cx="320" cy="192" rx="30" ry="12" fill="#E7B48A"/>
+  <!-- egg -->
+  <ellipse cx="420" cy="194" rx="30" ry="18" fill="#FFFFFF"/>
+  <ellipse cx="422" cy="194" rx="16" ry="10" fill="#F7A21B"/>
+  <!-- naruto -->
+  <ellipse cx="490" cy="196" rx="24" ry="13" fill="#FFFFFF"/>
+  <path d="M478 196 q6 -8 12 -2 q6 6 -2 8 q-8 2 -6 -6" fill="none" stroke="#F06292" stroke-width="3"/>
+  <!-- nori -->
+  <rect x="356" y="160" width="30" height="40" rx="3" fill="#1F3324" transform="rotate(-12 371 180)"/>
+  <!-- scallions -->
+  <g fill="#6BBF59">
+    <circle cx="370" cy="210" r="5"/><circle cx="384" cy="204" r="4"/><circle cx="456" cy="212" r="5"/><circle cx="292" cy="212" r="4"/>
+  </g>
+  <path d="M210 200 a190 44 0 0 0 380 0 q-8 110 -190 128 q-182 -18 -190 -128 Z" fill="url(#bowl)"/>
+  <g stroke="#FFFFFF" stroke-width="4" fill="none" opacity="0.8">
+    <path d="M260 268 h30 v-16 h-16 v8 h8"/>
+    <path d="M520 268 h-30 v-16 h16 v8 h-8"/>
+  </g>
+  <rect x="330" y="322" width="140" height="18" rx="6" fill="#8E1B17"/>
+</svg>

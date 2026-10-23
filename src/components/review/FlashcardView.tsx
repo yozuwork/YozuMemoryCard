@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import { Lightbulb, Volume2 } from 'lucide-react'
 import type { Flashcard } from '../../types/card'
 import { MediaImage } from '../card/MediaImage'
+import { exampleSpeechText } from '../../lib/speech'
 
 interface FlashcardViewProps {
   card: Flashcard
@@ -134,9 +135,24 @@ export function FlashcardView({ card, revealed, onReveal, onSpeak, speechSupport
                 </p>
                 <MediaImage id={card.backImage} alt="背面圖片" className="max-h-64 rounded-xl object-contain" />
                 {card.extra && (
-                  <p className="w-full whitespace-pre-wrap rounded-2xl bg-fill-2 px-4 py-3 text-left text-[15px] leading-relaxed text-ink-2 [overflow-wrap:anywhere]">
-                    {card.extra}
-                  </p>
+                  <div className="flex w-full items-start gap-2 rounded-2xl bg-fill-2 py-3 pl-4 pr-2">
+                    <p className="min-w-0 flex-1 whitespace-pre-wrap text-left text-[15px] leading-relaxed text-ink-2 [overflow-wrap:anywhere]">
+                      {card.extra}
+                    </p>
+                    {speechSupported && exampleSpeechText(card.extra) && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onSpeak(exampleSpeechText(card.extra))
+                        }}
+                        aria-label="朗讀例句"
+                        className="-my-1 flex size-9 shrink-0 items-center justify-center rounded-full text-ink-2 transition-colors hover:text-ink active:bg-fill"
+                      >
+                        <Volume2 size={17} />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </>

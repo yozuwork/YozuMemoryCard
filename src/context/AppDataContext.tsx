@@ -1,13 +1,14 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { MotionConfig } from 'motion/react'
-import { seedIfFirstLaunch } from '../db/seed'
+import { db } from '../db/schema'
+import { installJapanTravelDecks, removeSampleDataOnce } from '../db/seed'
 import { useApplyTheme, useKeyboardAwareness, useStudyReminder } from '../hooks/useEnvironment'
 import { LogoMark } from '../components/brand/Logo'
 
 type DbStatus = 'loading' | 'ready' | 'error'
 
 /**
- * Opens IndexedDB (seeding sample decks on the very first launch) and wires
+ * Opens IndexedDB (starting empty — sample decks are opt-in from Settings) and wires
  * app-wide effects: theme, keyboard handling and study reminders.
  */
 export function AppDataProvider({ children }: { children: ReactNode }) {
@@ -19,7 +20,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   useStudyReminder()
 
   useEffect(() => {
-    seedIfFirstLaunch()
+    db.open()
+      .then(removeSampleDataOnce)
+      .then(installJapanTravelDecks)
       .then(() => setStatus('ready'))
       .catch((e: unknown) => {
         console.error(e)

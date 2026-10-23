@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react'
 import clsx from 'clsx'
-import { ChartColumn, CloudUpload, Download, HardDrive, History, Info, Monitor, Moon, Sun, Trash2, Upload, Volume2 } from 'lucide-react'
+import { ChartColumn, CloudUpload, Download, HardDrive, History, Info, Monitor, Moon, RotateCcw, Sun, Trash2, Upload, Volume2 } from 'lucide-react'
 import { useDecks } from '../hooks/useData'
 import { useStorageInfo } from '../hooks/useStorageInfo'
 import { useSpeech } from '../hooks/useSpeech'
 import { getSettings, useSettings } from '../store/settings'
 import { confirmDialog, toast } from '../store/ui'
 import { backupFilename, countTableRows, createSnapshot, downloadBlob, exportBackupBlob, ImportError, parseBackup } from '../db/backup'
-import { clearAllData } from '../db/repo'
+import { clearAllData, resetAllProgress } from '../db/repo'
 import { writeSampleData } from '../db/seed'
 import { LANGUAGES } from '../lib/speech'
 import { formatBytes } from '../lib/time'
@@ -97,6 +97,20 @@ export function SettingsPage() {
     if (!ok) return
     s.reset()
     toast('已還原預設設定')
+  }
+
+  async function resetProgress() {
+    const ok = await confirmDialog({
+      title: '重置學習進度？',
+      message: '所有卡片會變回新卡片，複習紀錄與統計會清空；牌組、卡片與標籤都會保留。系統會先建立一份本機快照，可在「本機備份快照」還原。',
+      confirmLabel: '重置進度',
+      destructive: true,
+    })
+    if (!ok) return
+    await createSnapshot('重置進度前自動備份', getSettings())
+    await resetAllProgress()
+    void refresh()
+    toast('已重置學習進度')
   }
 
   async function wipe() {
@@ -307,6 +321,7 @@ export function SettingsPage() {
             toast('已加入範例牌組', { tone: 'success' })
           }}
         />
+        <ListRow icon={<RotateCcw size={21} className="text-danger" />} label="重置學習進度" destructive onClick={() => void resetProgress()} />
         <ListRow icon={<Trash2 size={21} className="text-danger" />} label="清除所有資料" destructive onClick={() => void wipe()} />
       </ListSection>
 
