@@ -1,14 +1,17 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'motion/react'
 import clsx from 'clsx'
-import { HardDrive } from 'lucide-react'
+import { HardDrive, LogIn, LogOut } from 'lucide-react'
 import { isActive, navItems, statsNavItem } from '../../lib/navigation'
 import { LogoMark, Wordmark } from '../brand/Logo'
+import { Avatar } from '../account/Avatar'
+import { useAccount } from '../../store/account'
 
 /** Fixed left navigation for screens ≥ 1024px. */
 export function Sidebar() {
   const { pathname } = useLocation()
   const items = [...navItems.slice(0, 1), statsNavItem, ...navItems.slice(1)]
+  const { user, busy, signIn, signOut } = useAccount()
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-[248px] flex-col border-r border-line bg-surface/70 px-4 pb-6 pt-7 backdrop-blur-xl lg:flex">
@@ -47,10 +50,43 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="flex items-start gap-2.5 rounded-2xl bg-fill-2 p-3 text-[12px] leading-relaxed text-ink-2">
-        <HardDrive size={15} className="mt-0.5 shrink-0" aria-hidden />
-        <span>資料僅儲存在此瀏覽器。請定期於「選項」匯出備份。</span>
-      </div>
+      {user ? (
+        <div className="flex items-center gap-2.5 rounded-2xl bg-fill-2 p-2.5">
+          <Link to="/settings" className="flex min-w-0 flex-1 items-center gap-2.5" aria-label="帳號與雲端備份">
+            <Avatar user={user} />
+            <span className="min-w-0">
+              <span className="block truncate text-[14px] font-medium text-ink">{user.displayName ?? '已登入'}</span>
+              {user.email && <span className="block truncate text-[12px] text-ink-2">{user.email}</span>}
+            </span>
+          </Link>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void signOut()}
+            aria-label="登出"
+            title="登出"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-ink-2 hover:bg-fill hover:text-ink"
+          >
+            <LogOut size={17} />
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2.5 rounded-2xl bg-fill-2 p-3 text-[12px] leading-relaxed text-ink-2">
+          <span className="flex items-start gap-2.5">
+            <HardDrive size={15} className="mt-0.5 shrink-0" aria-hidden />
+            <span>資料僅儲存在此瀏覽器。登入後可備份到雲端。</span>
+          </span>
+          <button
+            type="button"
+            disabled={busy || user === undefined}
+            onClick={() => void signIn()}
+            className="flex min-h-9 items-center justify-center gap-2 rounded-xl bg-brand text-[14px] font-semibold text-white disabled:opacity-50"
+          >
+            <LogIn size={16} aria-hidden />
+            使用 Google 登入
+          </button>
+        </div>
+      )}
     </aside>
   )
 }

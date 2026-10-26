@@ -24,7 +24,7 @@ const database = getDatabase(app)
 // Realtime Database caps a single string value at 10 MB.
 const MAX_BACKUP_BYTES = 10 * 1024 * 1024
 
-export type CloudUser = Pick<User, 'uid' | 'displayName' | 'email'>
+export type CloudUser = Pick<User, 'uid' | 'displayName' | 'email' | 'photoURL'>
 
 export interface CloudBackupMeta {
   exportedAt: number

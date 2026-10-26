@@ -10,7 +10,8 @@ import { db } from '../../db/schema'
 import { createSnapshot, ImportError, importBackup, importDelimited, readSnapshot, type BackupFile } from '../../db/backup'
 import { ensureDeck } from '../../db/repo'
 import { formatBytes, formatDateTime } from '../../lib/time'
-import type { CloudBackupMeta, CloudUser } from '../../lib/cloud'
+import type { CloudBackupMeta } from '../../lib/cloud'
+import { useAccount } from '../../store/account'
 import { getColor } from '../../lib/deckColors'
 import { getSettings, useSettings } from '../../store/settings'
 import { confirmDialog, toast } from '../../store/ui'
@@ -312,51 +313,40 @@ export function CloudSheet({
   onClose: () => void
   onRestore: (file: BackupFile) => void
 }) {
-  const [user, setUser] = useState<CloudUser | null | undefined>(undefined)
+  const { user, busy: authBusy, signIn, signOut } = useAccount()
   const [meta, setMeta] = useState<CloudBackupMeta | null | undefined>(undefined)
-  const [busy, setBusy] = useState(false)
+  const [working, setWorking] = useState(false)
+  const busy = working || authBusy
 
   useEffect(() => {
-    if (!open) return
-    let unsub: (() => void) | undefined
+    if (!open || !user) return
     let cancelled = false
+    setMeta(undefined)
     loadCloud()
-      .then((cloud) => {
-        if (cancelled) return
-        unsub = cloud.watchUser((u) => {
-          setUser(u)
-          setMeta(undefined)
-          if (u) cloud.readCloudMeta().then(setMeta, (e) => {
-            console.error(e)
-            setMeta(null)
-          })
-        })
-      })
-      .catch((e) => {
-        console.error(e)
-        toast('無法載入雲端服務，請確認網路連線', { tone: 'error' })
-        setUser(null)
-      })
+      .then((cloud) => cloud.readCloudMeta())
+      .then(
+        (m) => !cancelled && setMeta(m),
+        (e) => {
+          console.error(e)
+          if (!cancelled) setMeta(null)
+        },
+      )
     return () => {
       cancelled = true
-      unsub?.()
     }
-  }, [open])
+  }, [open, user])
 
   async function run(task: () => Promise<void>, failure: string) {
-    setBusy(true)
+    setWorking(true)
     try {
       await task()
     } catch (e) {
       console.error(e)
       toast(e instanceof ImportError ? e.message : failure, { tone: 'error' })
     } finally {
-      setBusy(false)
+      setWorking(false)
     }
   }
-
-  const signIn = () => run(async () => (await loadCloud()).signIn(), '登入失敗，請再試一次')
-  const signOut = () => run(async () => (await loadCloud()).signOutCloud(), '登出失敗')
 
   const upload = () =>
     run(async () => {
