@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "yozuMemoryCard": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && auth.uid == $uid",
+        "backupData": {
+          ".validate": "newData.isString() && newData.val().length < 10485760"
+        },
+        "backupMeta": {
+          ".validate": "newData.hasChildren(['exportedAt', 'decks', 'cards', 'size'])"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}

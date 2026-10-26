@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { CloudOff, Database, History, RotateCcw, ShieldCheck, ShieldAlert, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { CloudDownload, CloudUpload, Database, History, LogOut, RotateCcw, ShieldCheck, ShieldAlert, Trash2 } from 'lucide-react'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 import { ListRow, ListSection } from '../ui/List'
@@ -7,9 +7,10 @@ import { Skeleton } from '../ui/Controls'
 import { useSnapshots } from '../../hooks/useData'
 import type { StorageInfo } from '../../hooks/useStorageInfo'
 import { db } from '../../db/schema'
-import { createSnapshot, importBackup, importDelimited, readSnapshot, type BackupFile } from '../../db/backup'
+import { createSnapshot, ImportError, importBackup, importDelimited, readSnapshot, type BackupFile } from '../../db/backup'
 import { ensureDeck } from '../../db/repo'
 import { formatBytes, formatDateTime } from '../../lib/time'
+import type { CloudBackupMeta, CloudUser } from '../../lib/cloud'
 import { getColor } from '../../lib/deckColors'
 import { getSettings, useSettings } from '../../store/settings'
 import { confirmDialog, toast } from '../../store/ui'
@@ -45,7 +46,7 @@ export function StorageSheet({
         </span>
         <p className="text-[17px] font-semibold text-ink">資料只存在這台裝置的瀏覽器中</p>
         <p className="max-w-sm text-[14px] leading-relaxed text-ink-2">
-          卡片、圖片與複習紀錄都保存在 IndexedDB，離線也能使用。清除瀏覽器資料或更換裝置前，請先匯出備份。
+          卡片、圖片與複習紀錄都保存在 IndexedDB，離線也能使用。清除瀏覽器資料或更換裝置前，請先匯出備份或上傳雲端備份。
         </p>
       </div>
 
@@ -90,9 +91,6 @@ export function StorageSheet({
         />
       </ListSection>
 
-      <ListSection footer="跨裝置雲端同步需要帳號與伺服器，目前尚未提供。在那之前，請使用匯出 / 匯入備份在裝置間搬移資料。">
-        <ListRow icon={<CloudOff size={20} className="text-ink-2" />} label="雲端同步" value="規劃中" disabled />
-      </ListSection>
     </Modal>
   )
 }
@@ -295,6 +293,147 @@ export function SnapshotsSheet({ open, onClose }: { open: boolean; onClose: () =
             />
           ))}
         </ListSection>
+      )}
+    </Modal>
+  )
+}
+
+/* ---------------------------------------------------------------- cloud */
+
+// Firebase is only downloaded once this sheet is opened.
+const loadCloud = () => import('../../lib/cloud')
+
+export function CloudSheet({
+  open,
+  onClose,
+  onRestore,
+}: {
+  open: boolean
+  onClose: () => void
+  onRestore: (file: BackupFile) => void
+}) {
+  const [user, setUser] = useState<CloudUser | null | undefined>(undefined)
+  const [meta, setMeta] = useState<CloudBackupMeta | null | undefined>(undefined)
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    let unsub: (() => void) | undefined
+    let cancelled = false
+    loadCloud()
+      .then((cloud) => {
+        if (cancelled) return
+        unsub = cloud.watchUser((u) => {
+          setUser(u)
+          setMeta(undefined)
+          if (u) cloud.readCloudMeta().then(setMeta, (e) => {
+            console.error(e)
+            setMeta(null)
+          })
+        })
+      })
+      .catch((e) => {
+        console.error(e)
+        toast('無法載入雲端服務，請確認網路連線', { tone: 'error' })
+        setUser(null)
+      })
+    return () => {
+      cancelled = true
+      unsub?.()
+    }
+  }, [open])
+
+  async function run(task: () => Promise<void>, failure: string) {
+    setBusy(true)
+    try {
+      await task()
+    } catch (e) {
+      console.error(e)
+      toast(e instanceof ImportError ? e.message : failure, { tone: 'error' })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const signIn = () => run(async () => (await loadCloud()).signIn(), '登入失敗，請再試一次')
+  const signOut = () => run(async () => (await loadCloud()).signOutCloud(), '登出失敗')
+
+  const upload = () =>
+    run(async () => {
+      if (meta) {
+        const ok = await confirmDialog({
+          title: '覆蓋雲端備份？',
+          message: `雲端上 ${formatDateTime(meta.exportedAt)} 的備份會被目前的資料取代。`,
+          confirmLabel: '上傳',
+        })
+        if (!ok) return
+      }
+      setMeta(await (await loadCloud()).uploadCloudBackup(getSettings()))
+      toast('已上傳雲端備份', { tone: 'success' })
+    }, '上傳失敗，請確認網路連線')
+
+  const restore = () =>
+    run(async () => {
+      const file = await (await loadCloud()).downloadCloudBackup()
+      onClose()
+      onRestore(file)
+    }, '下載雲端備份失敗')
+
+  return (
+    <Modal open={open} onClose={onClose} title="雲端備份">
+      <p className="mb-5 px-2 text-center text-[14px] leading-relaxed text-ink-2">
+        用 Google 帳號把資料備份到雲端，換手機或清除瀏覽器後也能還原。雲端只保留最新一份備份。
+      </p>
+
+      {user === undefined ? (
+        <Skeleton className="h-24 rounded-[18px]" />
+      ) : !user ? (
+        <Button variant="brand" size="lg" fullWidth disabled={busy} onClick={() => void signIn()}>
+          使用 Google 登入
+        </Button>
+      ) : (
+        <>
+          <ListSection title="帳號">
+            <ListRow
+              label={user.displayName ?? '已登入'}
+              detail={user.email ?? undefined}
+              accessory={
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void signOut()}
+                  aria-label="登出"
+                  className="flex size-10 items-center justify-center rounded-full text-ink-2 hover:bg-fill-2"
+                >
+                  <LogOut size={19} />
+                </button>
+              }
+            />
+          </ListSection>
+
+          <ListSection title="雲端上的備份">
+            {meta === undefined ? (
+              <Skeleton className="m-4 h-10 rounded-[12px]" />
+            ) : meta === null ? (
+              <ListRow label="還沒有備份" />
+            ) : (
+              <>
+                <ListRow label="備份時間" value={formatDateTime(meta.exportedAt)} />
+                <ListRow label="內容" value={`${meta.decks} 個牌組 · ${meta.cards} 張卡片`} />
+                <ListRow label="大小" value={formatBytes(meta.size)} />
+              </>
+            )}
+          </ListSection>
+
+          <div className="flex flex-col gap-2.5">
+            <Button variant="brand" size="lg" fullWidth disabled={busy || meta === undefined} onClick={() => void upload()} icon={<CloudUpload size={19} />}>
+              上傳目前資料到雲端
+            </Button>
+            <Button variant="secondary" size="lg" fullWidth disabled={busy || !meta} onClick={() => void restore()} icon={<CloudDownload size={19} />}>
+              從雲端還原
+            </Button>
+          </div>
+        </>
       )}
     </Modal>
   )

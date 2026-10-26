@@ -17,7 +17,7 @@ import { GlassButton } from '../components/ui/GlassButton'
 import { ListRow, ListSection } from '../components/ui/List'
 import { Segmented, Slider, Stepper, Switch } from '../components/ui/Controls'
 import { SelectRow } from '../components/settings/SelectRow'
-import { ImportSheet, SnapshotsSheet, StorageSheet, type PendingImport } from '../components/settings/DataSheets'
+import { CloudSheet, ImportSheet, SnapshotsSheet, StorageSheet, type PendingImport } from '../components/settings/DataSheets'
 import { LogoMark } from '../components/brand/Logo'
 
 const orderOptions: { value: StudyOrder; label: string }[] = [
@@ -36,6 +36,7 @@ export function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [storageOpen, setStorageOpen] = useState(false)
   const [snapshotsOpen, setSnapshotsOpen] = useState(false)
+  const [cloudOpen, setCloudOpen] = useState(false)
   const [pending, setPending] = useState<PendingImport | null>(null)
   const [exporting, setExporting] = useState(false)
 
@@ -178,11 +179,12 @@ export function SettingsPage() {
           onClick={() => setSnapshotsOpen(true)}
         />
         <ListRow
-          icon={<CloudUpload size={21} className="text-ink-3" />}
-          label="雲端同步"
-          detail="需要帳號與伺服器，尚未提供"
-          value={<span className="rounded-md bg-fill px-2 py-0.5 text-[12px] font-medium">規劃中</span>}
-          disabled
+          icon={<CloudUpload size={21} className="text-tint" />}
+          label="雲端備份"
+          tint
+          detail="以 Google 帳號備份與還原"
+          chevron
+          onClick={() => setCloudOpen(true)}
         />
         <input
           ref={fileRef}
@@ -336,6 +338,11 @@ export function SettingsPage() {
 
       <StorageSheet open={storageOpen} onClose={() => setStorageOpen(false)} info={info} onPersist={requestPersist} />
       <SnapshotsSheet open={snapshotsOpen} onClose={() => setSnapshotsOpen(false)} />
+      <CloudSheet
+        open={cloudOpen}
+        onClose={() => setCloudOpen(false)}
+        onRestore={(file) => setPending({ kind: 'backup', file, name: '雲端備份' })}
+      />
       <ImportSheet pending={pending} onClose={() => setPending(null)} decks={decks ?? []} />
     </div>
   )
