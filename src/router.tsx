@@ -30,4 +30,4 @@ export const router = createBrowserRouter([
       { path: '*', element: <Navigate to="/review" replace /> },
     ],
   },
-])
+], { basename: import.meta.env.BASE_URL })
