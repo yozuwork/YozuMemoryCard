@@ -3,11 +3,15 @@ import izakaya from '../assets/covers/izakaya.svg'
 import restaurant from '../assets/covers/restaurant.svg'
 import type { Deck } from '../types/deck'
 
+// The 大阪旅行 covers are named after their pack key: osaka-01.svg → 'osaka-01'.
+const osakaCovers = import.meta.glob<string>('../assets/covers/osaka-*.svg', { eager: true, import: 'default', query: '?url' })
+
 /** Illustrated default covers for the built-in packs, by pack key. */
 const packCovers: Record<string, string> = {
   'japan-travel-01': transit,
   'japan-travel-02': izakaya,
   'japan-travel-03': restaurant,
+  ...Object.fromEntries(Object.entries(osakaCovers).map(([path, url]) => [path.slice(path.lastIndexOf('/') + 1, -4), url])),
 }
 
 export function packCoverOf(deck: Pick<Deck, 'packKey'>): string | undefined {

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o08-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE3B8"/>
+      <stop offset="1" stop-color="#F5B97A"/>
+    </linearGradient>
+    <linearGradient id="o08-plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5A5F6B"/>
+      <stop offset="1" stop-color="#2E3138"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o08-bg)"/>
+  <!-- griddle (teppan) -->
+  <rect x="40" y="150" width="560" height="170" rx="16" fill="url(#o08-plate)"/>
+  <rect x="40" y="306" width="560" height="14" rx="6" fill="#1E2025"/>
+  <!-- okonomiyaki -->
+  <g>
+    <ellipse cx="220" cy="238" rx="120" ry="58" fill="#C9813A"/>
+    <ellipse cx="220" cy="232" rx="112" ry="52" fill="#8A4A22"/>
+    <path d="M130 214 Q160 240 190 214 T250 214 T310 214" fill="none" stroke="#F8F2E0" stroke-width="5" stroke-linecap="round"/>
+    <path d="M140 246 Q170 270 200 246 T260 246 T300 246" fill="none" stroke="#F8F2E0" stroke-width="5" stroke-linecap="round"/>
+    <g fill="#E89AB0">
+      <path d="M170 228 l10 -6 l6 10 z"/><path d="M240 232 l12 -4 l2 12 z"/><path d="M280 220 l10 -6 l4 10 z"/>
+    </g>
+    <g fill="#5BA34A">
+      <circle cx="200" cy="222" r="3"/><circle cx="230" cy="250" r="3"/><circle cx="262" cy="240" r="3"/><circle cx="150" cy="238" r="3"/>
+    </g>
+  </g>
+  <!-- spatula -->
+  <g transform="rotate(-30 360 200)">
+    <rect x="330" y="186" width="70" height="40" rx="4" fill="#C8CED8"/>
+    <rect x="398" y="200" width="70" height="12" rx="5" fill="#6B4A2F"/>
+  </g>
+  <!-- takoyaki boat -->
+  <g transform="translate(400 190)">
+    <path d="M0 40 H170 L150 96 H20 Z" fill="#E6C892"/>
+    <path d="M0 40 H170 L166 50 H4 Z" fill="#D2B072"/>
+    <g fill="#C9813A">
+      <circle cx="36" cy="36" r="22"/><circle cx="84" cy="34" r="22"/><circle cx="132" cy="36" r="22"/>
+      <circle cx="60" cy="16" r="20"/><circle cx="108" cy="16" r="20"/>
+    </g>
+    <g fill="none" stroke="#5A2A12" stroke-width="5" stroke-linecap="round">
+      <path d="M22 30 Q36 22 50 30"/><path d="M70 28 Q84 20 98 28"/><path d="M118 30 Q132 22 146 30"/>
+      <path d="M48 12 Q60 4 72 12"/><path d="M96 12 Q108 4 120 12"/>
+    </g>
+    <g fill="#F8F2E0">
+      <path d="M30 40 q6 -6 12 0"/><path d="M80 38 q6 -6 12 0"/><path d="M126 40 q6 -6 12 0"/>
+    </g>
+    <g fill="#5BA34A"><circle cx="64" cy="26" r="2.5"/><circle cx="112" cy="26" r="2.5"/><circle cx="40" cy="22" r="2.5"/></g>
+    <rect x="150" y="-10" width="4" height="56" rx="2" fill="#E8D3A8" transform="rotate(20 152 18)"/>
+  </g>
+  <!-- vegetables -->
+  <g transform="translate(70 80)">
+    <circle cx="40" cy="46" r="38" fill="#9ACD6A"/>
+    <circle cx="40" cy="46" r="26" fill="#B8DE8A"/>
+    <path d="M24 40 Q40 30 56 44" fill="none" stroke="#7FB547" stroke-width="3"/>
+  </g>
+  <g transform="translate(500 40)">
+    <rect x="18" y="0" width="14" height="70" rx="6" fill="#5BA34A"/>
+    <rect x="34" y="6" width="14" height="64" rx="6" fill="#7FB547"/>
+    <rect x="18" y="64" width="30" height="40" rx="8" fill="#F4F0E0"/>
+  </g>
+  <g transform="translate(160 76)">
+    <path d="M0 30 Q20 0 40 30 Q60 0 80 30 Q60 60 40 40 Q20 60 0 30 Z" fill="#E5394A"/>
+    <ellipse cx="40" cy="22" rx="10" ry="6" fill="#5BA34A"/>
+  </g>
+  <!-- steam -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.6">
+    <path d="M200 160 q-12 -18 0 -36 q12 -18 0 -36"/>
+    <path d="M250 160 q-12 -18 0 -36"/>
+    <path d="M470 170 q-10 -16 0 -32 q10 -16 0 -32"/>
+  </g>
+</svg>

@@ -96,8 +96,8 @@ export function useStudyReminder() {
         if (Notification.permission === 'granted') {
           const body = '該複習今天的卡片囉！'
           const reg = await navigator.serviceWorker?.getRegistration()
-          if (reg) await reg.showNotification('YoZu 記憶卡', { body, icon: '/pwa-192.png', tag: 'daily-reminder' })
-          else new Notification('YoZu 記憶卡', { body, icon: '/pwa-192.png' })
+          if (reg) await reg.showNotification('YoZu 記憶卡', { body, icon: `${import.meta.env.BASE_URL}pwa-192.png`, tag: 'daily-reminder' })
+          else new Notification('YoZu 記憶卡', { body, icon: `${import.meta.env.BASE_URL}pwa-192.png` })
         }
         schedule()
       }, next.getTime() - Date.now())

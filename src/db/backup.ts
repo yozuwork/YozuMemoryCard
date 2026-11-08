@@ -16,9 +16,14 @@ interface SerializedMedia {
   data: string
 }
 
+/** 'deck' files hold one deck with its cards, progress and images, and are only ever merged in. */
+export type BackupScope = 'all' | 'deck'
+
 export interface BackupFile {
   format: typeof BACKUP_FORMAT
   version: 1
+  /** Missing in files from before single-deck export, which were always full backups. */
+  scope?: BackupScope
   exportedAt: number
   settings?: Partial<Settings>
   decks: Deck[]
@@ -45,6 +50,9 @@ function base64ToBlob(data: string, type: string): Blob {
   return new Blob([bytes], { type })
 }
 
+const serializeMedia = (media: MediaItem[]) =>
+  Promise.all(media.map(async (m) => ({ id: m.id, type: m.type, createdAt: m.createdAt, data: await blobToBase64(m.blob) })))
+
 export async function buildBackup(settings?: Partial<Settings>): Promise<BackupFile> {
   const [decks, cards, tags, reviews, media] = await Promise.all([
     db.decks.toArray(),
@@ -56,20 +64,52 @@ export async function buildBackup(settings?: Partial<Settings>): Promise<BackupF
   return {
     format: BACKUP_FORMAT,
     version: 1,
+    scope: 'all',
     exportedAt: Date.now(),
     settings,
     decks,
     cards,
     tags,
     reviews,
-    media: await Promise.all(
-      media.map(async (m) => ({ id: m.id, type: m.type, createdAt: m.createdAt, data: await blobToBase64(m.blob) })),
-    ),
+    media: await serializeMedia(media),
   }
 }
 
+/** One deck with its cards, review history (so progress travels with it), the tags those cards use and their images. */
+export async function buildDeckBackup(deckId: string): Promise<BackupFile> {
+  const deck = await db.decks.get(deckId)
+  if (!deck) throw new ImportError('找不到這個牌組')
+  const [cards, reviews] = await Promise.all([
+    db.cards.where('deckId').equals(deckId).toArray(),
+    db.reviews.where('deckId').equals(deckId).toArray(),
+  ])
+  const tagIds = new Set(cards.flatMap((c) => c.tagIds))
+  const mediaIds = [deck.coverImage, ...cards.flatMap((c) => [c.frontImage, c.backImage])].filter((id): id is string => Boolean(id))
+  const [tags, media] = await Promise.all([
+    db.tags.where('id').anyOf([...tagIds]).toArray(),
+    db.media.bulkGet(mediaIds),
+  ])
+  return {
+    format: BACKUP_FORMAT,
+    version: 1,
+    scope: 'deck',
+    exportedAt: Date.now(),
+    decks: [deck],
+    cards,
+    tags,
+    reviews,
+    media: await serializeMedia(media.filter((m): m is MediaItem => Boolean(m))),
+  }
+}
+
+const toBlob = (file: BackupFile) => new Blob([JSON.stringify(file)], { type: 'application/json' })
+
 export async function exportBackupBlob(settings?: Partial<Settings>): Promise<Blob> {
-  return new Blob([JSON.stringify(await buildBackup(settings))], { type: 'application/json' })
+  return toBlob(await buildBackup(settings))
+}
+
+export async function exportDeckBlob(deckId: string): Promise<Blob> {
+  return toBlob(await buildDeckBackup(deckId))
 }
 
 export class ImportError extends Error {}
@@ -118,6 +158,11 @@ export function parseBackup(raw: unknown): BackupFile {
         hint: str(c.hint),
         extra: str(c.extra),
         tagIds: Array.isArray(c.tagIds) ? c.tagIds.filter((t): t is string => typeof t === 'string') : [],
+        cardType: c.cardType === 'sentence' ? ('sentence' as const) : undefined,
+        sentenceKana: typeof c.sentenceKana === 'string' ? c.sentenceKana : undefined,
+        vocabulary: Array.isArray(c.vocabulary)
+          ? c.vocabulary.filter(isObj).map((v) => ({ word: str(v.word), reading: str(v.reading), meaning: str(v.meaning) }))
+          : undefined,
         starred: c.starred === true,
         due: num(c.due, base.due),
         state: ([0, 1, 2, 3].includes(num(c.state, -1)) ? c.state : 0) as Flashcard['state'],
@@ -141,6 +186,7 @@ export function parseBackup(raw: unknown): BackupFile {
   return {
     format: BACKUP_FORMAT,
     version: 1,
+    scope: raw.scope === 'deck' ? 'deck' : 'all',
     exportedAt: num(raw.exportedAt, now),
     settings: isObj(raw.settings) ? (raw.settings as Partial<Settings>) : undefined,
     decks,
@@ -159,6 +205,20 @@ export interface ImportResult {
   tags: number
 }
 
+/** On merge, a tag that already exists under the same name is reused instead of duplicated. */
+async function mergeTags(file: BackupFile): Promise<Pick<BackupFile, 'tags' | 'cards'>> {
+  const byName = new Map((await db.tags.toArray()).map((t) => [t.name, t.id]))
+  const remap = new Map<string, string>()
+  const tags = file.tags.filter((t) => {
+    const existing = byName.get(t.name)
+    if (existing && existing !== t.id) remap.set(t.id, existing)
+    return !remap.has(t.id)
+  })
+  if (remap.size === 0) return { tags, cards: file.cards }
+  const cards = file.cards.map((c) => ({ ...c, tagIds: [...new Set(c.tagIds.map((id) => remap.get(id) ?? id))] }))
+  return { tags, cards }
+}
+
 export async function importBackup(file: BackupFile, mode: ImportMode): Promise<ImportResult> {
   const media: MediaItem[] = file.media.map((m) => ({
     id: m.id,
@@ -166,13 +226,16 @@ export async function importBackup(file: BackupFile, mode: ImportMode): Promise<
     createdAt: m.createdAt,
     blob: base64ToBlob(m.data, m.type),
   }))
+  // A single deck never replaces everything else.
+  if (file.scope === 'deck') mode = 'merge'
   await db.transaction('rw', [db.decks, db.cards, db.tags, db.reviews, db.media], async () => {
     if (mode === 'replace') {
       await Promise.all([db.decks.clear(), db.cards.clear(), db.tags.clear(), db.reviews.clear(), db.media.clear()])
     }
+    const { tags, cards } = mode === 'merge' ? await mergeTags(file) : file
     await db.decks.bulkPut(file.decks)
-    await db.tags.bulkPut(file.tags)
-    await db.cards.bulkPut(file.cards)
+    await db.tags.bulkPut(tags)
+    await db.cards.bulkPut(cards)
     await db.reviews.bulkPut(file.reviews)
     await db.media.bulkPut(media)
   })
@@ -301,8 +364,10 @@ export function downloadBlob(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-export function backupFilename(): string {
+/** yozuanki-20261108-1830.json, or yozuanki-大阪 01｜大阪地鐵-20261108-1830.json for one deck. */
+export function backupFilename(deckName?: string): string {
   const d = new Date()
   const p = (n: number) => String(n).padStart(2, '0')
-  return `yozuanki-${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}.json`
+  const name = deckName ? `-${deckName.replace(/[\\/:*?"<>|]/g, '').trim()}` : ''
+  return `yozuanki${name}-${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}.json`
 }

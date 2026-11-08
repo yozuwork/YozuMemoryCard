@@ -30,6 +30,16 @@ export interface Schedule {
   lastReview?: number
 }
 
+/** Vocabulary cards are the default; sentence cards read front = Japanese, back = translation, extra = grammar notes. */
+export type CardType = 'vocab' | 'sentence'
+
+/** A key word explained on the answer side of a sentence card. */
+export interface SentenceWord {
+  word: string
+  reading: string
+  meaning: string
+}
+
 export interface Flashcard extends Schedule {
   id: string
   deckId: string
@@ -39,6 +49,16 @@ export interface Flashcard extends Schedule {
   hint: string
   /** Optional notes shown together with the answer. */
   extra: string
+  /** Kana reading of the Japanese example in `extra`; missing on older cards. */
+  exampleKana?: string
+  /** Missing means 'vocab'. */
+  cardType?: CardType
+  /** Sentence cards: the sentence in kana, words separated by spaces. */
+  sentenceKana?: string
+  /** Sentence cards: key words in the sentence. */
+  vocabulary?: SentenceWord[]
+  /** Installed from a built-in or sample deck rather than written by the user; earns no creation EXP. */
+  seeded?: boolean
   /** Media table ids. */
   frontImage?: string
   backImage?: string
@@ -50,7 +70,7 @@ export interface Flashcard extends Schedule {
 
 export type CardContent = Pick<
   Flashcard,
-  'deckId' | 'front' | 'back' | 'hint' | 'extra' | 'frontImage' | 'backImage' | 'tagIds' | 'starred'
+  'deckId' | 'front' | 'back' | 'hint' | 'extra' | 'exampleKana' | 'cardType' | 'sentenceKana' | 'vocabulary' | 'frontImage' | 'backImage' | 'tagIds' | 'starred'
 >
 
 export interface ReviewLogEntry {

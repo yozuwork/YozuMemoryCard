@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o01-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3B4A63"/>
+      <stop offset="1" stop-color="#1E2738"/>
+    </linearGradient>
+    <linearGradient id="o01-train" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4F7FB"/>
+      <stop offset="1" stop-color="#C9D3E0"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o01-bg)"/>
+  <!-- ceiling lights -->
+  <g fill="#FFF4CC" opacity="0.9">
+    <rect x="60" y="40" width="90" height="8" rx="4"/>
+    <rect x="275" y="40" width="90" height="8" rx="4"/>
+    <rect x="490" y="40" width="90" height="8" rx="4"/>
+  </g>
+  <!-- tiled wall -->
+  <rect x="0" y="62" width="640" height="150" fill="#E9E4D8"/>
+  <g stroke="#CFC8B8" stroke-width="2">
+    <path d="M0 92 H640 M0 122 H640 M0 152 H640 M0 182 H640"/>
+    <path d="M40 62 V212 M80 62 V212 M120 62 V212 M160 62 V212 M200 62 V212 M240 62 V212 M280 62 V212 M320 62 V212 M360 62 V212 M400 62 V212 M440 62 V212 M480 62 V212 M520 62 V212 M560 62 V212 M600 62 V212"/>
+  </g>
+  <!-- Midosuji red line stripe -->
+  <rect x="0" y="138" width="640" height="16" fill="#E5171F"/>
+  <!-- tunnel mouth -->
+  <path d="M440 212 V120 Q440 74 500 74 H640 V212 Z" fill="#141B28"/>
+  <circle cx="560" cy="150" r="10" fill="#FFE27A" opacity="0.6"/>
+  <!-- train -->
+  <path d="M60 128 H470 Q520 128 528 170 V250 H60 Z" fill="url(#o01-train)"/>
+  <rect x="60" y="214" width="468" height="16" fill="#E5171F"/>
+  <path d="M478 140 Q512 142 516 180 H478 Z" fill="#1B2A44"/>
+  <g fill="#1B2A44">
+    <rect x="86" y="146" width="56" height="44" rx="6"/>
+    <rect x="166" y="146" width="56" height="44" rx="6"/>
+    <rect x="300" y="146" width="56" height="44" rx="6"/>
+    <rect x="380" y="146" width="56" height="44" rx="6"/>
+  </g>
+  <rect x="238" y="140" width="46" height="104" rx="4" fill="#AEB9C9"/>
+  <rect x="260" y="140" width="2" height="104" fill="#7E8AA0"/>
+  <g fill="#FFFFFF" opacity="0.35">
+    <rect x="92" y="150" width="14" height="36" rx="3"/>
+    <rect x="306" y="150" width="14" height="36" rx="3"/>
+  </g>
+  <circle cx="508" cy="200" r="7" fill="#FFE27A"/>
+  <rect x="60" y="250" width="470" height="8" fill="#0F1520"/>
+  <!-- platform -->
+  <rect x="0" y="258" width="640" height="102" fill="#8D96A6"/>
+  <rect x="0" y="258" width="640" height="6" fill="#B7BECB"/>
+  <rect x="0" y="282" width="640" height="12" fill="#F5C842"/>
+  <g fill="#D9A92A">
+    <circle cx="20" cy="288" r="2"/><circle cx="60" cy="288" r="2"/><circle cx="100" cy="288" r="2"/><circle cx="140" cy="288" r="2"/><circle cx="180" cy="288" r="2"/><circle cx="220" cy="288" r="2"/><circle cx="260" cy="288" r="2"/><circle cx="300" cy="288" r="2"/><circle cx="340" cy="288" r="2"/><circle cx="380" cy="288" r="2"/><circle cx="420" cy="288" r="2"/><circle cx="460" cy="288" r="2"/><circle cx="500" cy="288" r="2"/><circle cx="540" cy="288" r="2"/><circle cx="580" cy="288" r="2"/><circle cx="620" cy="288" r="2"/>
+  </g>
+</svg>

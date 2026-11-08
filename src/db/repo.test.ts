@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from './schema'
 import { createDeck, createTag, deleteDeck, setDeckCover, deleteTag, rateCard, resetAllProgress, saveCard, undoReview } from './repo'
-import { buildBackup, importBackup, parseBackup } from './backup'
+import { buildBackup, buildDeckBackup, importBackup, parseBackup } from './backup'
 import { CardState, Rating } from '../types/card'
 
 const content = (deckId: string, tagIds: string[] = []) => ({
@@ -125,5 +125,53 @@ describe('repository', () => {
     await setDeckCover(deck.id, new Blob(['c'], { type: 'image/png' }))
     await deleteDeck(deck.id)
     expect(await db.media.count()).toBe(0)
+  })
+})
+
+describe('single-deck export and import', () => {
+  const roundTrip = async (file: Promise<Parameters<typeof importBackup>[0]>) => parseBackup(JSON.parse(JSON.stringify(await file)))
+
+  it('carries one deck with its progress, tags and images, and nothing else', async () => {
+    const tag = await createTag({ name: '旅日', color: 'rose' })
+    const deck = await createDeck({ name: '大阪', color: 'blue' })
+    const other = await createDeck({ name: '英文', color: 'green' })
+    const card = await saveCard(null, content(deck.id, [tag.id]), { front: new Blob(['a'], { type: 'image/png' }) })
+    await saveCard(null, content(other.id), {})
+    await rateCard(card, Rating.Good, { now: Date.now(), retention: 0.9, durationMs: 1000 })
+
+    const file = await roundTrip(buildDeckBackup(deck.id))
+    expect(file.scope).toBe('deck')
+    expect(file.decks.map((d) => d.name)).toEqual(['大阪'])
+    expect(file.cards).toHaveLength(1)
+    expect(file.reviews).toHaveLength(1)
+    expect(file.tags.map((t) => t.name)).toEqual(['旅日'])
+    expect(file.media).toHaveLength(1)
+
+    // Restoring it brings the progress back without touching the other deck.
+    await deleteDeck(deck.id)
+    await importBackup(file, 'merge')
+    const restored = (await db.cards.get(card.id))!
+    expect(restored.state).not.toBe(CardState.New)
+    expect(restored.reps).toBe(1)
+    expect(await db.reviews.where('cardId').equals(card.id).count()).toBe(1)
+    expect(await db.decks.count()).toBe(2)
+  })
+
+  it('never replaces everything, and reuses tags that already exist by name', async () => {
+    const tag = await createTag({ name: '旅日', color: 'rose' })
+    const deck = await createDeck({ name: '大阪', color: 'blue' })
+    await saveCard(null, content(deck.id, [tag.id]), {})
+    const file = await roundTrip(buildDeckBackup(deck.id))
+
+    // Someone else's app: different tag id with the same name, plus their own deck.
+    await Promise.all(db.tables.map((t) => t.clear()))
+    const theirs = await createTag({ name: '旅日', color: 'blue' })
+    const own = await createDeck({ name: '自己的', color: 'green' })
+    await importBackup(file, 'replace')
+
+    expect(await db.decks.get(own.id)).toBeTruthy()
+    expect(await db.tags.count()).toBe(1)
+    const imported = (await db.cards.where('deckId').equals(deck.id).first())!
+    expect(imported.tagIds).toEqual([theirs.id])
   })
 })

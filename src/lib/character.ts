@@ -156,6 +156,7 @@ export function computeCharacter(
     day(log.reviewedAt).logs.push(log)
   }
   for (const card of cards) {
+    if (card.seeded) continue
     total += CARD_CREATED_XP
     day(card.createdAt).created += 1
   }

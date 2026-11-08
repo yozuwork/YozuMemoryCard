@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { db } from '../db/schema'
 import { speak, stopSpeaking } from '../lib/speech'
+import { backSpeech, frontSpeech } from '../lib/japaneseCard'
 import { getSettings } from './settings'
 
 /**
@@ -34,12 +35,15 @@ export const usePlayer = create<PlayerStore>()((set, get) => {
       if (token !== runToken) return
       if (card) {
         const { speechRate, languageOrder } = getSettings()
+        const front = frontSpeech(card)
+        const back = backSpeech(card)
         set({ currentText: card.front })
-        await speak(card.front, { rate: speechRate, order: languageOrder })
+        await speak(front.text, { rate: speechRate, order: languageOrder, lang: front.lang })
         if (token !== runToken) return
         await wait(500)
         if (token !== runToken) return
-        await speak(card.back, { rate: speechRate, order: languageOrder })
+        // A Japanese card's front and back read the same kana; once is enough.
+        if (back.text !== front.text) await speak(back.text, { rate: speechRate, order: languageOrder, lang: back.lang })
         if (token !== runToken) return
         await wait(900)
       }

@@ -6,7 +6,7 @@ import { useStorageInfo } from '../hooks/useStorageInfo'
 import { useSpeech } from '../hooks/useSpeech'
 import { getSettings, useSettings } from '../store/settings'
 import { confirmDialog, toast } from '../store/ui'
-import { backupFilename, countTableRows, createSnapshot, downloadBlob, exportBackupBlob, ImportError, parseBackup } from '../db/backup'
+import { backupFilename, createSnapshot, downloadBlob, exportBackupBlob } from '../db/backup'
 import { clearAllData, resetAllProgress } from '../db/repo'
 import { writeSampleData } from '../db/seed'
 import { LANGUAGES } from '../lib/speech'
@@ -17,7 +17,15 @@ import { GlassButton } from '../components/ui/GlassButton'
 import { ListRow, ListSection } from '../components/ui/List'
 import { Segmented, Slider, Stepper, Switch } from '../components/ui/Controls'
 import { SelectRow } from '../components/settings/SelectRow'
-import { CloudSheet, ImportSheet, SnapshotsSheet, StorageSheet, type PendingImport } from '../components/settings/DataSheets'
+import {
+  CloudSheet,
+  IMPORT_ACCEPT,
+  ImportSheet,
+  readImportFile,
+  SnapshotsSheet,
+  StorageSheet,
+  type PendingImport,
+} from '../components/settings/DataSheets'
 import { LogoMark } from '../components/brand/Logo'
 import { Avatar } from '../components/account/Avatar'
 import { useAccount } from '../store/account'
@@ -62,22 +70,7 @@ export function SettingsPage() {
   async function onFile(file: File | undefined) {
     if (!file) return
     try {
-      const text = await file.text()
-      if (/\.json$/i.test(file.name) || file.type === 'application/json') {
-        let raw: unknown
-        try {
-          raw = JSON.parse(text)
-        } catch {
-          throw new ImportError('檔案不是有效的 JSON')
-        }
-        setPending({ kind: 'backup', file: parseBackup(raw), name: file.name })
-      } else if (/\.(csv|tsv|txt)$/i.test(file.name)) {
-        const rows = countTableRows(text)
-        if (!rows) throw new ImportError('找不到可匯入的資料列（每列至少需要兩欄）')
-        setPending({ kind: 'table', text, rows, name: file.name })
-      } else {
-        throw new ImportError('不支援的檔案格式，請選擇 .json、.csv 或 .tsv')
-      }
+      setPending(await readImportFile(file))
     } catch (e) {
       toast(e instanceof Error ? e.message : '無法讀取檔案', { tone: 'error' })
     }
@@ -192,9 +185,9 @@ export function SettingsPage() {
         />
         <ListRow
           icon={<Download size={21} className="text-tint" />}
-          label={exporting ? '匯出中…' : '匯出備份'}
+          label={exporting ? '匯出中…' : '匯出全部備份'}
           tint
-          detail="包含卡片、圖片、複習紀錄與設定"
+          detail="所有牌組、卡片、圖片、學習進度與設定；單一牌組可在牌組頁的「⋯」匯出"
           disabled={exporting}
           onClick={() => void exportData()}
         />
@@ -216,7 +209,7 @@ export function SettingsPage() {
         <input
           ref={fileRef}
           type="file"
-          accept=".json,.csv,.tsv,.txt,application/json,text/csv,text/tab-separated-values"
+          accept={IMPORT_ACCEPT}
           className="hidden"
           onChange={(e) => {
             void onFile(e.target.files?.[0])

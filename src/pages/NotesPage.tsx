@@ -51,7 +51,7 @@ export function NotesPage() {
         )
       }
     >
-      <NotesSegment value="notes" />
+      <NotesSegment />
     </NoteBrowser>
   )
 }

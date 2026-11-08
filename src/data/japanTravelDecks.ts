@@ -2,12 +2,15 @@ import type { ColorName } from '../lib/deckColors'
 import type { SeedCard, SeedDeck } from './mockData'
 
 // Built-in Japanese travel decks, installed and kept in sync per browser (see db/seed.ts).
-// Front: Japanese · back: reading — 中文 · extra: example sentence（中文翻譯）.
+// Vocabulary — front: Japanese · back: reading — 中文 · extra: example sentence（中文翻譯）.
+// Sentences — front: Japanese · back: 中文 · sentenceKana · vocabulary · extra: grammar notes.
 // Bump a deck's `version` after editing it so existing installs pick up the change.
 
 export const japanTravelTags: { name: string; color: ColorName }[] = [{ name: '旅日', color: 'rose' }]
 
 const travel = (cards: SeedCard[]): SeedCard[] => cards.map((c) => ({ ...c, tags: ['旅日'] }))
+const sentences = (cards: Omit<SeedCard, 'cardType'>[]): SeedCard[] => travel(cards.map((c) => ({ ...c, cardType: 'sentence' })))
+const w = (word: string, reading: string, meaning: string) => ({ word, reading, meaning })
 
 export interface PackDeck extends SeedDeck {
   /** Stable id; also selects the built-in cover (see lib/deckCovers). */
@@ -18,7 +21,7 @@ export interface PackDeck extends SeedDeck {
 export const japanTravelDecks: PackDeck[] = [
   {
     key: 'japan-travel-01',
-    version: 2,
+    version: 3,
     name: '01｜交通與車站',
     description: '電車、地鐵、新幹線、轉乘、月台、票券、車站公告。',
     color: 'blue',
@@ -79,7 +82,7 @@ export const japanTravelDecks: PackDeck[] = [
   },
   {
     key: 'japan-travel-02',
-    version: 2,
+    version: 3,
     name: '02｜居酒屋與日本料理',
     description: '燒烤、炸物、刺身、下酒菜、酒類、調味方式，包含各種菜單寫法。',
     color: 'amber',
@@ -188,7 +191,7 @@ export const japanTravelDecks: PackDeck[] = [
   },
   {
     key: 'japan-travel-03',
-    version: 2,
+    version: 3,
     name: '03｜餐廳點餐與用語',
     description: '拉麵、定食、套餐、客製化、加點、結帳。',
     color: 'coral',
@@ -234,6 +237,99 @@ export const japanTravelDecks: PackDeck[] = [
       { front: '現金のみ', back: 'げんきんのみ — 只收現金', extra: 'この店は現金のみです。（這家店只收現金。）' },
       { front: '売り切れ', back: 'うりきれ — 售完', extra: 'すみません、本日は売り切れです。（不好意思，今天已售完。）' },
       { front: 'ごちそうさまでした', back: 'ごちそうさまでした — 謝謝招待（吃飽了）', extra: 'おいしかったです。ごちそうさまでした。（很好吃，謝謝招待。）' },
+    ]),
+  },
+  {
+    key: 'japan-travel-04',
+    version: 1,
+    name: '04｜旅遊實用句子',
+    description: '問路、點餐、結帳、住宿常用的完整句子。',
+    color: 'lilac',
+    cards: sentences([
+      {
+        front: '次の駅で乗り換えてください。',
+        back: '請在下一站轉乘。',
+        sentenceKana: 'つぎ の えき で のりかえて ください。',
+        vocabulary: [w('次', 'つぎ', '下一個'), w('駅', 'えき', '車站'), w('乗り換える', 'のりかえる', '轉乘')],
+        extra: '「動詞て形＋ください」\n表示禮貌地請求對方做某件事。\n例：乗り換えてください。（請轉乘。）',
+      },
+      {
+        front: 'この電車は空港に行きますか。',
+        back: '這班電車有到機場嗎？',
+        sentenceKana: 'この でんしゃ は くうこう に いきます か。',
+        vocabulary: [w('電車', 'でんしゃ', '電車'), w('空港', 'くうこう', '機場'), w('行く', 'いく', '去')],
+        extra: '「場所＋に行きますか」\n「に」表示移動的目的地，用來確認車子會不會開到那裡。',
+      },
+      {
+        front: '二人ですが、席はありますか。',
+        back: '我們兩位，有位子嗎？',
+        sentenceKana: 'ふたり です が、せき は あります か。',
+        vocabulary: [w('二人', 'ふたり', '兩個人'), w('席', 'せき', '座位')],
+        extra: '「〜が、〜」\n這裡的「が」是先說明狀況再提問的開場用法，不是轉折。\n「ありますか」詢問有沒有。',
+      },
+      {
+        front: 'おすすめは何ですか。',
+        back: '推薦什麼？',
+        sentenceKana: 'おすすめ は なん です か。',
+        vocabulary: [w('おすすめ', 'おすすめ', '推薦'), w('何', 'なん', '什麼')],
+        extra: '「AはBですか」\n最基本的疑問句。「何」接在「です」前面時讀作「なん」。',
+      },
+      {
+        front: 'これを一つください。',
+        back: '請給我一個這個。',
+        sentenceKana: 'これ を ひとつ ください。',
+        vocabulary: [w('これ', 'これ', '這個'), w('一つ', 'ひとつ', '一個')],
+        extra: '「名詞を＋數量＋ください」\n點餐、購物時請對方給你東西。數量直接放在「ください」前面。',
+      },
+      {
+        front: 'お会計をお願いします。',
+        back: '麻煩結帳。',
+        sentenceKana: 'おかいけい を おねがい します。',
+        vocabulary: [w('お会計', 'おかいけい', '結帳'), w('お願いする', 'おねがいする', '拜託、麻煩')],
+        extra: '「名詞をお願いします」\n禮貌地請求某項服務，用途很廣，例如「お水をお願いします」（麻煩給我水）。',
+      },
+      {
+        front: 'カードで払えますか。',
+        back: '可以用卡付款嗎？',
+        sentenceKana: 'カード で はらえます か。',
+        vocabulary: [w('カード', 'カード', '信用卡、卡片'), w('払う', 'はらう', '付款')],
+        extra: '「手段＋で」＋「可能形」\n「で」表示用什麼方式；「払えます」是「払う」的可能形，詢問能不能這樣做。',
+      },
+      {
+        front: 'トイレはどこですか。',
+        back: '廁所在哪裡？',
+        sentenceKana: 'トイレ は どこ です か。',
+        vocabulary: [w('トイレ', 'トイレ', '廁所'), w('どこ', 'どこ', '哪裡')],
+        extra: '「〜はどこですか」\n詢問地點的萬用句，把「トイレ」換成「駅」「出口」都可以。',
+      },
+      {
+        front: '写真を撮ってもいいですか。',
+        back: '可以拍照嗎？',
+        sentenceKana: 'しゃしん を とって も いい です か。',
+        vocabulary: [w('写真', 'しゃしん', '照片'), w('撮る', 'とる', '拍攝')],
+        extra: '「動詞て形＋もいいですか」\n詢問許可：可以做〜嗎？',
+      },
+      {
+        front: '荷物を預かってもらえますか。',
+        back: '可以幫我寄放行李嗎？',
+        sentenceKana: 'にもつ を あずかって もらえます か。',
+        vocabulary: [w('荷物', 'にもつ', '行李'), w('預かる', 'あずかる', '代為保管')],
+        extra: '「動詞て形＋もらえますか」\n請對方幫忙做某事，比「〜てください」更委婉客氣。',
+      },
+      {
+        front: 'チェックインは何時からですか。',
+        back: '幾點開始可以入住？',
+        sentenceKana: 'チェックイン は なんじ から です か。',
+        vocabulary: [w('チェックイン', 'チェックイン', '入住手續'), w('何時', 'なんじ', '幾點')],
+        extra: '「時間＋から」\n「から」表示起點：從幾點開始。結束時間用「まで」。',
+      },
+      {
+        front: '少し安くなりませんか。',
+        back: '可以算便宜一點嗎？',
+        sentenceKana: 'すこし やすく なりません か。',
+        vocabulary: [w('少し', 'すこし', '一點點'), w('安い', 'やすい', '便宜')],
+        extra: '「い形容詞（去い）＋くなる」＋「〜ませんか」\n「安くなる」表示變便宜；用否定疑問「〜ませんか」委婉地提出請求。',
+      },
     ]),
   },
 ]

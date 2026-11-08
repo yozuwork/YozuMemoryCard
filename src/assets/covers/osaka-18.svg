@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o18-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5E6E8E"/>
+      <stop offset="1" stop-color="#B3BED2"/>
+    </linearGradient>
+    <radialGradient id="o18-lamp" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF6B5C" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#FF6B5C" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o18-sky)"/>
+  <!-- rain -->
+  <g stroke="#E6ECF5" stroke-width="2" stroke-linecap="round" opacity="0.6">
+    <path d="M40 30 l-8 18 M110 60 l-8 18 M180 20 l-8 18 M420 40 l-8 18 M500 70 l-8 18 M590 30 l-8 18 M560 130 l-8 18 M60 130 l-8 18 M140 170 l-8 18 M610 200 l-8 18"/>
+  </g>
+  <!-- koban -->
+  <g>
+    <circle cx="320" cy="62" r="46" fill="url(#o18-lamp)"/>
+    <rect x="312" y="50" width="16" height="22" rx="4" fill="#E5171F"/>
+    <path d="M220 84 L320 60 L420 84 Z" fill="#3D4B66"/>
+    <rect x="220" y="84" width="200" height="12" fill="#2B364C"/>
+    <rect x="232" y="96" width="176" height="174" fill="#E9E4D8"/>
+    <rect x="232" y="106" width="176" height="20" fill="#2F4A7A"/>
+    <circle cx="320" cy="116" r="6" fill="#E8C66A"/>
+    <rect x="290" y="150" width="60" height="120" fill="#BFD4EA"/>
+    <rect x="319" y="150" width="2" height="120" fill="#8AA2BF"/>
+    <rect x="246" y="150" width="30" height="40" fill="#BFD4EA"/>
+    <rect x="364" y="150" width="30" height="40" fill="#BFD4EA"/>
+  </g>
+  <!-- ground -->
+  <rect x="0" y="270" width="640" height="90" fill="#6E7687"/>
+  <rect x="0" y="266" width="640" height="8" fill="#9AA3B2"/>
+  <g fill="#8E97A8" opacity="0.7"><ellipse cx="200" cy="310" rx="50" ry="6"/><ellipse cx="470" cy="330" rx="60" ry="6"/></g>
+  <!-- first-aid kit -->
+  <g transform="translate(70 160)">
+    <rect x="30" y="-16" width="40" height="20" rx="6" fill="none" stroke="#C8CED8" stroke-width="6"/>
+    <rect x="0" y="0" width="100" height="80" rx="10" fill="#FFFFFF"/>
+    <rect x="40" y="16" width="20" height="48" rx="3" fill="#E5394A"/>
+    <rect x="26" y="30" width="48" height="20" rx="3" fill="#E5394A"/>
+  </g>
+  <!-- umbrella -->
+  <g transform="translate(500 120)">
+    <path d="M-70 60 Q-70 0 0 -6 Q70 0 70 60 Q52 48 35 60 Q18 48 0 60 Q-18 48 -35 60 Q-52 48 -70 60 Z" fill="#2FA84F"/>
+    <path d="M-35 60 Q-30 20 0 -6 Q30 20 35 60" fill="none" stroke="#1E7A3A" stroke-width="2"/>
+    <rect x="-3" y="-18" width="6" height="14" rx="3" fill="#3D4B66"/>
+    <path d="M0 60 V130 Q0 146 -14 146 Q-26 146 -26 134" fill="none" stroke="#3D4B66" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <!-- lost bag -->
+  <g transform="translate(150 236)">
+    <path d="M18 18 Q18 -6 42 -6 Q66 -6 66 18" fill="none" stroke="#6B4A2F" stroke-width="6"/>
+    <rect x="0" y="14" width="84" height="60" rx="10" fill="#C9813A"/>
+    <rect x="0" y="30" width="84" height="10" fill="#A8662A"/>
+    <rect x="36" y="26" width="12" height="18" rx="3" fill="#E8C66A"/>
+  </g>
+  <!-- question/alert badge -->
+  <g transform="translate(560 236)">
+    <path d="M0 -26 L28 22 H-28 Z" fill="#F5C842"/>
+    <rect x="-3" y="-10" width="6" height="18" rx="3" fill="#3D2A10"/>
+    <circle cx="0" cy="14" r="3.5" fill="#3D2A10"/>
+  </g>
+</svg>

@@ -1,4 +1,5 @@
 import type { ColorName } from '../lib/deckColors'
+import type { CardType, SentenceWord } from '../types/card'
 
 // Sample content written into IndexedDB on demand from Settings (see db/seed.ts).
 // All cards start new.
@@ -8,7 +9,12 @@ export interface SeedCard {
   back: string
   hint?: string
   extra?: string
+  /** Kana reading of the example in `extra`, words separated by spaces. */
+  exampleKana?: string
   tags?: string[]
+  cardType?: CardType
+  sentenceKana?: string
+  vocabulary?: SentenceWord[]
 }
 
 export interface SeedDeck {

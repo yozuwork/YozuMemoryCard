@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o14-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E2A5E"/>
+      <stop offset="1" stop-color="#6A5AAE"/>
+    </linearGradient>
+    <radialGradient id="o14-globe" cx="0.35" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#9FD4FF"/>
+      <stop offset="1" stop-color="#2F6FD0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o14-sky)"/>
+  <!-- fireworks -->
+  <g stroke-linecap="round" stroke-width="4" fill="none">
+    <g stroke="#FFD27A" transform="translate(120 80)">
+      <path d="M0 -36 V-14 M0 14 V36 M-36 0 H-14 M14 0 H36 M-25 -25 L-10 -10 M10 10 L25 25 M25 -25 L10 -10 M-10 10 L-25 25"/>
+    </g>
+    <g stroke="#FF8FA3" transform="translate(520 70)">
+      <path d="M0 -30 V-12 M0 12 V30 M-30 0 H-12 M12 0 H30 M-21 -21 L-9 -9 M9 9 L21 21 M21 -21 L9 -9 M-9 9 L-21 21"/>
+    </g>
+    <g stroke="#7DDA8C" transform="translate(440 130)" opacity="0.8">
+      <path d="M0 -18 V-8 M0 8 V18 M-18 0 H-8 M8 0 H18"/>
+    </g>
+  </g>
+  <!-- castle silhouette -->
+  <g fill="#3E3478">
+    <rect x="40" y="170" width="140" height="110"/>
+    <rect x="50" y="130" width="30" height="50"/><path d="M44 132 L65 92 L86 132 Z"/>
+    <rect x="96" y="110" width="36" height="70"/><path d="M90 112 L114 62 L138 112 Z"/>
+    <rect x="146" y="140" width="28" height="40"/><path d="M140 142 L160 106 L180 142 Z"/>
+  </g>
+  <g fill="#FFD27A" opacity="0.8"><rect x="108" y="130" width="12" height="16" rx="6"/><rect x="60" y="150" width="10" height="12" rx="5"/></g>
+  <!-- roller coaster -->
+  <path d="M380 280 Q420 120 480 160 Q530 200 560 110 Q590 40 640 120" fill="none" stroke="#FF6B6B" stroke-width="8"/>
+  <path d="M380 280 Q420 120 480 160 Q530 200 560 110 Q590 40 640 120" fill="none" stroke="#FFC2C2" stroke-width="2"/>
+  <g stroke="#B8B2E0" stroke-width="4">
+    <path d="M420 190 V280 M460 152 V280 M500 172 V280 M540 160 V280 M570 92 V280 M610 76 V280"/>
+  </g>
+  <g transform="rotate(-50 556 120)">
+    <rect x="540" y="110" width="30" height="16" rx="5" fill="#F5C842"/>
+  </g>
+  <!-- globe on pedestal -->
+  <g>
+    <circle cx="300" cy="150" r="84" fill="url(#o14-globe)"/>
+    <g fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.6">
+      <ellipse cx="300" cy="150" rx="84" ry="28"/>
+      <ellipse cx="300" cy="150" rx="40" ry="84"/>
+      <path d="M216 150 H384 M300 66 V234"/>
+    </g>
+    <g fill="#7DDA8C" opacity="0.85">
+      <path d="M250 110 Q270 96 296 108 Q300 128 278 134 Q254 132 250 110 Z"/>
+      <path d="M318 150 Q344 140 356 160 Q350 186 326 184 Q312 170 318 150 Z"/>
+    </g>
+    <ellipse cx="300" cy="150" rx="112" ry="30" fill="none" stroke="#C9D6F5" stroke-width="6" transform="rotate(-18 300 150)"/>
+    <path d="M270 232 H330 L346 262 H254 Z" fill="#C8D2E0"/>
+    <rect x="236" y="262" width="128" height="18" rx="4" fill="#9AA6C2"/>
+  </g>
+  <!-- ground / water -->
+  <rect x="0" y="280" width="640" height="80" fill="#2C2560"/>
+  <g fill="#6A5AAE" opacity="0.6">
+    <rect x="200" y="296" width="200" height="4" rx="2"/><rect x="250" y="312" width="100" height="4" rx="2"/>
+  </g>
+</svg>

@@ -22,8 +22,11 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     db.open()
       .then(removeSampleDataOnce)
-      .then(installJapanTravelDecks)
-      .then(() => setStatus('ready'))
+      .then(() => {
+        setStatus('ready')
+        // Built-in decks install in the background; a failure is logged and retried on the next launch.
+        installJapanTravelDecks().catch((e: unknown) => console.error('內建牌組安裝失敗，下次開啟時會重試', e))
+      })
       .catch((e: unknown) => {
         console.error(e)
         setError(e instanceof Error ? e.message : String(e))

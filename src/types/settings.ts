@@ -1,5 +1,9 @@
 export type StudyOrder = 'review-first' | 'new-first' | 'mixed'
 export type ThemeMode = 'system' | 'light' | 'dark'
+/** What the front of a Japanese card shows: kanji, kana only, or nothing but audio. */
+export type StudyMode = 'kanji' | 'kana' | 'listen'
+/** What the front of a sentence card shows. */
+export type SentenceMode = 'kana' | 'kanji'
 
 export interface Settings {
   speechRate: number
@@ -7,6 +11,10 @@ export interface Settings {
   languageOrder: string[]
   autoSpeakFront: boolean
   autoSpeakBack: boolean
+  studyMode: StudyMode
+  sentenceMode: SentenceMode
+  showExampleKana: boolean
+  showExampleZh: boolean
 
   studyOrder: StudyOrder
   newPerDay: number

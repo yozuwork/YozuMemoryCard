@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o06-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F6E7CF"/>
+      <stop offset="1" stop-color="#E9CFA8"/>
+    </linearGradient>
+    <linearGradient id="o06-bowl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C2413A"/>
+      <stop offset="1" stop-color="#8E2622"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o06-bg)"/>
+  <!-- wooden lattice wall -->
+  <g stroke="#D8B88A" stroke-width="3" opacity="0.7">
+    <path d="M40 0 V250 M100 0 V250 M540 0 V250 M600 0 V250"/>
+  </g>
+  <!-- noren -->
+  <rect x="120" y="22" width="400" height="10" rx="5" fill="#6B4A2F"/>
+  <g fill="#2E4A7A">
+    <path d="M130 32 H222 V118 Q176 128 130 118 Z"/>
+    <path d="M228 32 H320 V118 Q274 128 228 118 Z"/>
+    <path d="M326 32 H418 V118 Q372 128 326 118 Z"/>
+    <path d="M424 32 H516 V118 Q470 128 424 118 Z"/>
+  </g>
+  <g fill="#F4EBDD">
+    <circle cx="320" cy="72" r="26"/>
+  </g>
+  <circle cx="320" cy="72" r="14" fill="#2E4A7A"/>
+  <!-- menu board -->
+  <g transform="translate(444 128)">
+    <rect x="0" y="0" width="120" height="120" rx="6" fill="#3E2C1E"/>
+    <rect x="8" y="8" width="104" height="104" rx="4" fill="#2C3A2E"/>
+    <g fill="#F4EBDD" opacity="0.85">
+      <rect x="20" y="22" width="50" height="7" rx="3"/><circle cx="96" cy="25" r="5"/>
+      <rect x="20" y="42" width="62" height="7" rx="3"/><circle cx="96" cy="45" r="5"/>
+      <rect x="20" y="62" width="44" height="7" rx="3"/><circle cx="96" cy="65" r="5"/>
+      <rect x="20" y="82" width="56" height="7" rx="3"/><circle cx="96" cy="85" r="5"/>
+    </g>
+  </g>
+  <!-- counter -->
+  <rect x="0" y="250" width="640" height="110" fill="#B07A45"/>
+  <rect x="0" y="250" width="640" height="10" fill="#C99258"/>
+  <!-- tray -->
+  <rect x="150" y="248" width="300" height="34" rx="8" fill="#5A3A22"/>
+  <!-- rice bowl (donburi) -->
+  <path d="M190 196 H350 Q346 266 270 270 Q194 266 190 196 Z" fill="url(#o06-bowl)"/>
+  <rect x="236" y="262" width="68" height="10" rx="3" fill="#6E1D1A"/>
+  <ellipse cx="270" cy="196" rx="80" ry="16" fill="#FFFFFF"/>
+  <!-- katsu / egg topping -->
+  <g>
+    <ellipse cx="262" cy="188" rx="50" ry="14" fill="#F5C842"/>
+    <rect x="226" y="176" width="22" height="16" rx="4" fill="#C9813A"/>
+    <rect x="252" y="174" width="22" height="16" rx="4" fill="#C9813A"/>
+    <rect x="278" y="176" width="22" height="16" rx="4" fill="#C9813A"/>
+    <ellipse cx="310" cy="190" rx="10" ry="5" fill="#7FB547"/>
+  </g>
+  <path d="M196 216 Q270 232 344 216" fill="none" stroke="#F4EBDD" stroke-width="3" opacity="0.6"/>
+  <!-- chopsticks -->
+  <g transform="rotate(-18 390 230)">
+    <rect x="360" y="226" width="130" height="7" rx="3" fill="#3E2C1E"/>
+    <rect x="360" y="238" width="130" height="7" rx="3" fill="#3E2C1E"/>
+  </g>
+  <rect x="380" y="256" width="26" height="10" rx="5" fill="#E8D3A8"/>
+  <!-- miso cup -->
+  <path d="M100 222 H160 Q158 270 130 272 Q102 270 100 222 Z" fill="#2B2B2B"/>
+  <ellipse cx="130" cy="222" rx="30" ry="7" fill="#C98A4A"/>
+  <!-- tea cup -->
+  <rect x="470" y="250" width="44" height="54" rx="8" fill="#8BAF7A"/>
+  <ellipse cx="492" cy="252" rx="22" ry="6" fill="#B9D59A"/>
+</svg>

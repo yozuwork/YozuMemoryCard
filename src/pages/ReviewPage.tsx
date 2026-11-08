@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ChartColumn, PencilLine, Plus, SkipForward, Undo2 } from 'lucide-react'
+import { ChartColumn, PencilLine, Plus, SkipForward, Swords, Undo2 } from 'lucide-react'
 import clsx from 'clsx'
 import { useCards, useDecks, useLogsSince } from '../hooks/useData'
 import { useNow } from '../hooks/useEnvironment'
-import { useSpeech } from '../hooks/useSpeech'
+import { useSpeech, useVoiceAvailable } from '../hooks/useSpeech'
 import { useSettings } from '../store/settings'
 import { toast } from '../store/ui'
 import { rateCard, undoReview } from '../db/repo'
@@ -12,13 +12,15 @@ import { buildStudyPlan, nextLearningDue, pickNextCard, planCounts } from '../li
 import { previewDue } from '../lib/scheduler'
 import { computeStreak, dailyStats } from '../lib/deckStats'
 import { studyDayBounds, DAY } from '../lib/time'
+import { backSpeech, frontSpeech, isSentence, JA, japaneseParts } from '../lib/japaneseCard'
+import type { SentenceMode, StudyMode } from '../types/settings'
 import { CardState, type Flashcard, type Rating } from '../types/card'
 import { FlashcardView } from '../components/review/FlashcardView'
 import { RatingButtons } from '../components/review/RatingButtons'
 import { DeckPicker } from '../components/review/DeckPicker'
 import { SessionSummary } from '../components/review/SessionSummary'
 import { EmptyState } from '../components/ui/EmptyState'
-import { Skeleton } from '../components/ui/Controls'
+import { Segmented, Skeleton } from '../components/ui/Controls'
 import { buttonClasses } from '../components/ui/buttonStyles'
 
 const LAST_DECK_KEY = 'yozuanki-review-deck'
@@ -45,6 +47,7 @@ export function ReviewPage() {
   const todayLogsAll = useLogsSince(dayStart)
   const recentLogs = useLogsSince(dayStart - 60 * DAY)
   const { say, supported: speechSupported } = useSpeech()
+  const japaneseVoice = useVoiceAvailable(JA)
 
   // Session state
   const [currentId, setCurrentId] = useState<string | null>(null)
@@ -105,16 +108,30 @@ export function ReviewPage() {
     }
   }, [plan, currentId, current, settings.studyOrder, served, skipped])
 
+  const currentParts = current ? japaneseParts(current) : null
+  // The listening front has nothing to read, so it always plays the word.
+  const listening = currentParts !== null && settings.studyMode === 'listen'
+
   // Auto read-aloud.
   useEffect(() => {
-    if (current && !revealed && settings.autoSpeakFront) void say(current.front)
-    // Only when a new card appears.
+    if (current && !revealed && (settings.autoSpeakFront || listening)) {
+      const line = frontSpeech(current)
+      void say(line.text, line.lang)
+    }
+    // Only when a new card appears, or when switching into listening mode.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.id])
+  }, [current?.id, listening])
   useEffect(() => {
-    if (current && revealed && settings.autoSpeakBack) void say(current.back)
+    if (current && revealed && settings.autoSpeakBack) {
+      const line = backSpeech(current)
+      void say(line.text, line.lang)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revealed])
+
+  // Offer the study modes only when this scope actually has Japanese vocabulary cards.
+  const hasJapanese = useMemo(() => Boolean(scoped?.some((c) => japaneseParts(c))), [scoped])
+  const currentIsSentence = current ? isSentence(current) : false
 
   const dues = useMemo(
     () => (current ? previewDue(current, now, settings.retention) : undefined),
@@ -205,7 +222,10 @@ export function ReviewPage() {
         void rate(Number(e.key) as Rating)
       } else if (e.key.toLowerCase() === 'z') void undo()
       else if (e.key === 'ArrowRight') skip()
-      else if (e.key.toLowerCase() === 'r') void say(revealed ? current.back : current.front)
+      else if (e.key.toLowerCase() === 'r') {
+        const line = revealed ? backSpeech(current) : frontSpeech(current)
+        void say(line.text, line.lang)
+      }
       else if (e.key.toLowerCase() === 'e') navigate(`/notes/card/${current.id}`)
     }
     window.addEventListener('keydown', onKey)
@@ -270,6 +290,13 @@ export function ReviewPage() {
           >
             <ChartColumn size={20} />
           </Link>
+          <Link
+            to="/character"
+            aria-label="角色"
+            className="-ml-1 flex size-11 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-fill-2 hover:text-ink lg:hidden"
+          >
+            <Swords size={20} />
+          </Link>
         </div>
         <dl className="grid shrink-0 grid-cols-[auto_auto] gap-x-2 text-right text-[13px] leading-[1.45]" aria-label="今日進度">
           <dd className={clsx('font-semibold tabular-nums', counts.new ? 'text-tint' : 'text-ink-3')}>{counts.new}</dd>
@@ -317,12 +344,43 @@ export function ReviewPage() {
       ) : (
         <>
           <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8">
+            {currentIsSentence ? (
+              <Segmented<SentenceMode>
+                label="句子顯示方式"
+                value={settings.sentenceMode}
+                onChange={(v) => settings.set({ sentenceMode: v })}
+                options={[
+                  { value: 'kana', label: '純假名' },
+                  { value: 'kanji', label: '漢字' },
+                ]}
+                className="mb-2 w-full max-w-[200px]"
+              />
+            ) : hasJapanese && (
+              <Segmented<StudyMode>
+                label="學習模式"
+                value={settings.studyMode}
+                onChange={(v) => settings.set({ studyMode: v })}
+                options={[
+                  { value: 'kanji', label: '漢字' },
+                  { value: 'kana', label: '假名' },
+                  { value: 'listen', label: '聽力' },
+                ]}
+                className="mb-2 w-full max-w-[240px]"
+              />
+            )}
             <FlashcardView
               card={current}
               revealed={revealed}
               onReveal={reveal}
-              onSpeak={(t) => void say(t)}
+              onSpeak={(t, lang, slow) => void say(t, lang, slow)}
               speechSupported={speechSupported}
+              mode={settings.studyMode}
+              sentenceMode={settings.sentenceMode}
+              japaneseVoice={japaneseVoice}
+              showExampleKana={settings.showExampleKana}
+              showExampleZh={settings.showExampleZh}
+              onToggleExampleKana={() => settings.set({ showExampleKana: !settings.showExampleKana })}
+              onToggleExampleZh={() => settings.set({ showExampleZh: !settings.showExampleZh })}
             />
             <div className="flex items-center gap-1 text-ink-2" role="toolbar" aria-label="卡片操作">
               <button

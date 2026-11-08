@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layers, Plus } from 'lucide-react'
+import { Download, Ellipsis, Layers, Plus, Upload } from 'lucide-react'
 import { useCards, useDecks } from '../hooks/useData'
 import { useNow } from '../hooks/useEnvironment'
 import { useSettings } from '../store/settings'
@@ -16,6 +16,11 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { Button } from '../components/ui/Button'
 import { Skeleton } from '../components/ui/Controls'
 import { SearchField } from '../components/ui/Field'
+import { Menu } from '../components/ui/Menu'
+import { IMPORT_ACCEPT, ImportSheet, readImportFile, type PendingImport } from '../components/settings/DataSheets'
+import { backupFilename, downloadBlob, exportBackupBlob } from '../db/backup'
+import { getSettings } from '../store/settings'
+import { toast } from '../store/ui'
 
 export function DecksPage() {
   const navigate = useNavigate()
@@ -26,6 +31,27 @@ export function DecksPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [query, setQuery] = useState('')
   const language = useNotesLanguage((s) => s.language)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [pending, setPending] = useState<PendingImport | null>(null)
+
+  async function onFile(file: File | undefined) {
+    if (!file) return
+    try {
+      setPending(await readImportFile(file))
+    } catch (e) {
+      toast(e instanceof Error ? e.message : '無法讀取檔案', { tone: 'error' })
+    }
+  }
+
+  async function exportAll() {
+    try {
+      downloadBlob(await exportBackupBlob(getSettings()), backupFilename())
+      toast('已匯出全部牌組與學習進度', { tone: 'success' })
+    } catch (e) {
+      console.error(e)
+      toast('匯出失敗', { tone: 'error' })
+    }
+  }
 
   const byDeck = useMemo(() => groupByDeck(cards ?? []), [cards])
   const visible = (decks ?? []).filter(
@@ -37,14 +63,28 @@ export function DecksPage() {
   return (
     <div>
       <PageHeader
-        title="筆記"
+        title="牌組"
         trailing={
-          <GlassButton round aria-label="新增牌組" onClick={() => setDialogOpen(true)}>
-            <Plus size={24} />
-          </GlassButton>
+          <div className="flex items-center gap-2">
+            <Menu
+              label="匯入與匯出"
+              items={[
+                { label: '匯入牌組或備份', icon: <Upload size={18} />, onSelect: () => fileRef.current?.click() },
+                { label: '匯出全部（含學習進度）', icon: <Download size={18} />, disabled: !decks?.length, onSelect: () => void exportAll() },
+              ]}
+              trigger={(p) => (
+                <GlassButton {...p} round aria-label="匯入與匯出">
+                  <Ellipsis size={22} />
+                </GlassButton>
+              )}
+            />
+            <GlassButton round aria-label="新增牌組" onClick={() => setDialogOpen(true)}>
+              <Plus size={24} />
+            </GlassButton>
+          </div>
         }
       />
-      <NotesSegment value="decks" />
+      <NotesSegment />
 
       {decks && decks.length > 3 && <SearchField value={query} onChange={setQuery} placeholder="搜尋牌組" className="mb-4" />}
 
@@ -81,6 +121,17 @@ export function DecksPage() {
         </>
       )}
 
+      <input
+        ref={fileRef}
+        type="file"
+        accept={IMPORT_ACCEPT}
+        className="hidden"
+        onChange={(e) => {
+          void onFile(e.target.files?.[0])
+          e.target.value = ''
+        }}
+      />
+      <ImportSheet pending={pending} onClose={() => setPending(null)} decks={decks ?? []} />
       <DeckFormDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}

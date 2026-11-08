@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'motion/react'
 import clsx from 'clsx'
 import { HardDrive, LogIn, LogOut } from 'lucide-react'
-import { isActive, navItems, statsNavItem } from '../../lib/navigation'
+import { characterNavItem, isActive, navItems, statsNavItem } from '../../lib/navigation'
 import { LogoMark, Wordmark } from '../brand/Logo'
 import { Avatar } from '../account/Avatar'
 import { useAccount } from '../../store/account'
@@ -10,7 +10,7 @@ import { useAccount } from '../../store/account'
 /** Fixed left navigation for screens ≥ 1024px. */
 export function Sidebar() {
   const { pathname } = useLocation()
-  const items = [...navItems.slice(0, 1), statsNavItem, ...navItems.slice(1)]
+  const items = [...navItems.slice(0, 1), statsNavItem, characterNavItem, ...navItems.slice(1)]
   const { user, busy, signIn, signOut } = useAccount()
 
   return (

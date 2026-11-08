@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o07-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2A1B3D"/>
+      <stop offset="1" stop-color="#5A2E2A"/>
+    </linearGradient>
+    <radialGradient id="o07-lantern" cx="0.4" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#FF8A5C"/>
+      <stop offset="0.6" stop-color="#E23B2E"/>
+      <stop offset="1" stop-color="#A51F1A"/>
+    </radialGradient>
+    <linearGradient id="o07-beer" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC94A"/>
+      <stop offset="1" stop-color="#E8932A"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o07-bg)"/>
+  <circle cx="140" cy="140" r="110" fill="#FF7A4A" opacity="0.12"/>
+  <!-- akachochin -->
+  <g>
+    <line x1="140" y1="0" x2="140" y2="46" stroke="#1A0E0A" stroke-width="3"/>
+    <rect x="118" y="44" width="44" height="12" rx="2" fill="#1A0E0A"/>
+    <ellipse cx="140" cy="138" rx="62" ry="84" fill="url(#o07-lantern)"/>
+    <g stroke="#8A1A14" stroke-width="2" fill="none" opacity="0.6">
+      <path d="M84 96 Q140 86 196 96"/><path d="M79 124 Q140 114 201 124"/><path d="M79 152 Q140 142 201 152"/><path d="M84 180 Q140 170 196 180"/>
+    </g>
+    <rect x="118" y="218" width="44" height="12" rx="2" fill="#1A0E0A"/>
+    <rect x="137" y="230" width="6" height="18" fill="#1A0E0A"/>
+  </g>
+  <!-- counter -->
+  <rect x="0" y="256" width="640" height="104" fill="#7A4A26"/>
+  <rect x="0" y="256" width="640" height="10" fill="#9A6234"/>
+  <!-- sauce pot -->
+  <g transform="translate(232 196)">
+    <rect x="0" y="10" width="96" height="62" rx="8" fill="#B8BFC9"/>
+    <ellipse cx="48" cy="12" rx="48" ry="10" fill="#4A2412"/>
+    <rect x="0" y="34" width="96" height="6" fill="#9AA2AE"/>
+  </g>
+  <!-- kushikatsu skewers -->
+  <g>
+    <g transform="rotate(-24 300 200)">
+      <rect x="296" y="100" width="5" height="150" rx="2" fill="#E8D3A8"/>
+      <rect x="280" y="96" width="36" height="70" rx="16" fill="#D9933E"/>
+      <g fill="#B8722A" opacity="0.8"><circle cx="290" cy="112" r="3"/><circle cx="304" cy="128" r="3"/><circle cx="292" cy="146" r="3"/></g>
+    </g>
+    <g transform="rotate(-6 300 200)">
+      <rect x="306" y="90" width="5" height="160" rx="2" fill="#E8D3A8"/>
+      <circle cx="308" cy="112" r="20" fill="#E0A04A"/>
+      <circle cx="308" cy="152" r="20" fill="#D9933E"/>
+      <g fill="#B8722A" opacity="0.8"><circle cx="300" cy="106" r="3"/><circle cx="314" cy="156" r="3"/></g>
+    </g>
+    <g transform="rotate(16 300 200)">
+      <rect x="318" y="96" width="5" height="150" rx="2" fill="#E8D3A8"/>
+      <rect x="302" y="100" width="38" height="56" rx="12" fill="#C9813A"/>
+      <g fill="#A8662A" opacity="0.8"><circle cx="312" cy="114" r="3"/><circle cx="328" cy="136" r="3"/></g>
+    </g>
+  </g>
+  <!-- plate of skewers -->
+  <ellipse cx="200" cy="292" rx="120" ry="20" fill="#F4EBDD"/>
+  <g transform="rotate(-6 200 284)">
+    <rect x="110" y="282" width="190" height="4" rx="2" fill="#E8D3A8"/>
+    <rect x="130" y="270" width="40" height="26" rx="10" fill="#D9933E"/>
+    <rect x="178" y="270" width="40" height="26" rx="10" fill="#C9813A"/>
+    <rect x="226" y="270" width="40" height="26" rx="10" fill="#E0A04A"/>
+  </g>
+  <!-- cabbage -->
+  <g fill="#9ACD6A">
+    <ellipse cx="380" cy="292" rx="40" ry="14"/>
+    <ellipse cx="400" cy="284" rx="26" ry="10" fill="#B8DE8A"/>
+  </g>
+  <!-- beer mug -->
+  <g transform="translate(450 140)">
+    <path d="M70 34 h22 a18 18 0 0 1 18 18 v34 a18 18 0 0 1 -18 18 h-22" fill="none" stroke="#F4EBDD" stroke-width="10" opacity="0.85"/>
+    <rect x="0" y="28" width="76" height="110" rx="8" fill="url(#o07-beer)"/>
+    <rect x="0" y="28" width="76" height="110" rx="8" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.6"/>
+    <g fill="#FFFFFF">
+      <circle cx="12" cy="28" r="16"/><circle cx="34" cy="20" r="18"/><circle cx="58" cy="24" r="17"/><circle cx="72" cy="32" r="12"/>
+    </g>
+    <g fill="#FFFFFF" opacity="0.5">
+      <circle cx="22" cy="80" r="3"/><circle cx="44" cy="100" r="2.5"/><circle cx="52" cy="66" r="2"/>
+    </g>
+  </g>
+</svg>

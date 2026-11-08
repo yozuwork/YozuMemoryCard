@@ -2,24 +2,25 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
 import clsx from 'clsx'
-import { ChevronDown, ChevronLeft, RotateCcw, Star, Tag as TagIcon, Trash2, Ellipsis, Volume2 } from 'lucide-react'
+import { ChevronDown, ChevronLeft, Plus, RotateCcw, Star, Tag as TagIcon, Trash2, Ellipsis, Volume2, X } from 'lucide-react'
 import { useCard, useDecks, useTags } from '../hooks/useData'
 import { useUnsavedGuard } from '../hooks/useUnsavedGuard'
 import { useSpeech } from '../hooks/useSpeech'
-import { exampleSpeechText } from '../lib/speech'
+import { backSpeechText, exampleSpeechText } from '../lib/speech'
+import { JA, japaneseParts } from '../lib/japaneseCard'
 import { deleteCards, ensureDeck, resetCards, saveCard } from '../db/repo'
 import { confirmDialog, toast } from '../store/ui'
 import { getColor } from '../lib/deckColors'
 import { stateLabel } from '../lib/ratings'
 import { formatRelativeFuture } from '../lib/time'
-import { CardState, type Flashcard } from '../types/card'
+import { CardState, type CardType, type Flashcard, type SentenceWord } from '../types/card'
 import type { Deck, Tag } from '../types/deck'
 import { EditorBlock, ImagePreview } from '../components/editor/EditorBlock'
 import { TagPicker } from '../components/editor/TagPicker'
 import { DeckSelect } from '../components/editor/DeckSelect'
 import { TextArea } from '../components/ui/Field'
 import { Menu } from '../components/ui/Menu'
-import { Skeleton } from '../components/ui/Controls'
+import { Segmented, Skeleton } from '../components/ui/Controls'
 import { EmptyState } from '../components/ui/EmptyState'
 
 const LAST_DECK_KEY = 'yozuanki-editor-deck'
@@ -30,6 +31,10 @@ interface FormState {
   back: string
   hint: string
   extra: string
+  exampleKana: string
+  cardType: CardType
+  sentenceKana: string
+  vocabulary: SentenceWord[]
   tagIds: string[]
   starred: boolean
   /** undefined = unchanged, null = removed, Blob = new image */
@@ -44,6 +49,10 @@ function fromCard(card: Flashcard): FormState {
     back: card.back,
     hint: card.hint,
     extra: card.extra,
+    exampleKana: card.exampleKana ?? '',
+    cardType: card.cardType ?? 'vocab',
+    sentenceKana: card.sentenceKana ?? '',
+    vocabulary: card.vocabulary ?? [],
     tagIds: card.tagIds,
     starred: card.starred,
     frontBlob: undefined,
@@ -51,8 +60,22 @@ function fromCard(card: Flashcard): FormState {
   }
 }
 
-function blank(deckId: string, tagIds: string[] = []): FormState {
-  return { deckId, front: '', back: '', hint: '', extra: '', tagIds, starred: false, frontBlob: undefined, backBlob: undefined }
+function blank(deckId: string, tagIds: string[] = [], cardType: CardType = 'vocab'): FormState {
+  return {
+    deckId,
+    front: '',
+    back: '',
+    hint: '',
+    extra: '',
+    exampleKana: '',
+    cardType,
+    sentenceKana: '',
+    vocabulary: [],
+    tagIds,
+    starred: false,
+    frontBlob: undefined,
+    backBlob: undefined,
+  }
 }
 
 function sameForm(a: FormState, b: FormState) {
@@ -62,6 +85,10 @@ function sameForm(a: FormState, b: FormState) {
     a.back === b.back &&
     a.hint === b.hint &&
     a.extra === b.extra &&
+    a.exampleKana === b.exampleKana &&
+    a.cardType === b.cardType &&
+    a.sentenceKana === b.sentenceKana &&
+    JSON.stringify(a.vocabulary) === JSON.stringify(b.vocabulary) &&
     a.starred === b.starred &&
     a.frontBlob === b.frontBlob &&
     a.backBlob === b.backBlob &&
@@ -134,12 +161,12 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
   const [extraOpen, setExtraOpen] = useState(Boolean(card?.extra))
   const frontRef = useRef<HTMLTextAreaElement>(null)
   const speech = useSpeech()
-  const speakButton = (text: string, label: string) =>
+  const speakButton = (text: string, label: string, lang?: string) =>
     speech.supported &&
     text.trim() && (
       <button
         type="button"
-        onClick={() => void speech.say(text)}
+        onClick={() => void speech.say(text, lang)}
         aria-label={label}
         className="flex size-11 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-fill-2 hover:text-ink"
       >
@@ -148,14 +175,17 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
     )
 
   const dirty = !sameForm(form, baseline)
+  const sentence = form.cardType === 'sentence'
+  // Japanese vocabulary ("えき — 車站") gets an extra field for the example's reading.
+  const isJapanese = sentence || japaneseParts(form) !== null
   const { allowNext } = useUnsavedGuard(dirty && !saving)
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }))
 
   const hasFront = form.front.trim() !== '' || form.frontBlob instanceof Blob || (form.frontBlob === undefined && Boolean(card?.frontImage))
   const hasBack = form.back.trim() !== '' || form.backBlob instanceof Blob || (form.backBlob === undefined && Boolean(card?.backImage))
-  const frontError = tried && !hasFront ? '請輸入正面內容或加入圖片' : undefined
-  const backError = tried && !hasBack ? '請輸入想記住的內容或加入圖片' : undefined
+  const frontError = tried && !hasFront ? (sentence ? '請輸入日文句子' : '請輸入正面內容或加入圖片') : undefined
+  const backError = tried && !hasBack ? (sentence ? '請輸入中文翻譯' : '請輸入想記住的內容或加入圖片') : undefined
 
   function leave() {
     allowNext()
@@ -182,6 +212,14 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
           back: form.back.trim(),
           hint: form.hint.trim(),
           extra: form.extra.trim(),
+          ...(sentence
+            ? {
+                cardType: 'sentence' as const,
+                exampleKana: undefined,
+                sentenceKana: form.sentenceKana.trim() || undefined,
+                vocabulary: cleanVocabulary(form.vocabulary),
+              }
+            : { cardType: undefined, exampleKana: form.exampleKana.trim() || undefined, sentenceKana: undefined, vocabulary: undefined }),
           tagIds: form.tagIds.filter((id) => tags.some((t) => t.id === id)),
           starred: form.starred,
         },
@@ -196,7 +234,7 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
         toast('已儲存變更', { tone: 'success' })
         leave()
       } else {
-        const next = blank(deckId, form.tagIds)
+        const next = blank(deckId, form.tagIds, form.cardType)
         setBaseline(next)
         setForm(next)
         setTried(false)
@@ -328,7 +366,7 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
             />
           ) : (
             dirty && (
-              <button type="button" onClick={() => void clearForm()} className="min-h-11 px-2 text-[16px] text-ink-2 hover:text-ink">
+              <button type="button" onClick={() => void clearForm()} className="min-h-11 shrink-0 whitespace-nowrap px-2 text-[16px] text-ink-2 hover:text-ink">
                 清除
               </button>
             )
@@ -336,7 +374,7 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
           <button
             type="submit"
             disabled={saving}
-            className="min-h-10 rounded-[12px] bg-tint px-5 text-[17px] font-semibold text-white shadow-[0_6px_16px_-6px_var(--c-tint)] transition-[transform,filter] active:scale-[0.97] disabled:opacity-60"
+            className="min-h-10 shrink-0 whitespace-nowrap rounded-[12px] bg-tint px-5 text-[17px] font-semibold text-white shadow-[0_6px_16px_-6px_var(--c-tint)] transition-[transform,filter] active:scale-[0.97] disabled:opacity-60"
           >
             {saving ? '儲存中…' : '完成'}
           </button>
@@ -361,10 +399,21 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
         </div>
       )}
 
+      <Segmented<CardType>
+        label="卡片類型"
+        value={form.cardType}
+        onChange={(v) => set('cardType', v)}
+        options={[
+          { value: 'vocab', label: '單字卡' },
+          { value: 'sentence', label: '句子卡' },
+        ]}
+        className="mb-4 max-w-[240px]"
+      />
+
       <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
         <EditorBlock
-          title="卡片正面"
-          action={speakButton(form.front, '朗讀正面')}
+          title={sentence ? '日文句子' : '卡片正面'}
+          action={speakButton(form.front, '朗讀正面', isJapanese ? JA : undefined)}
           onPickImage={(b) => set('frontBlob', b)}
           error={frontError}
         >
@@ -379,11 +428,25 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
             minRows={2}
             value={form.front}
             onChange={(e) => set('front', e.target.value)}
-            placeholder="單字、問題或概念…"
+            placeholder={sentence ? '例如：次の駅で乗り換えてください。' : '單字、問題或概念…'}
             aria-invalid={Boolean(frontError)}
             autoFocus={!isEdit && window.matchMedia('(pointer: fine)').matches}
             className="min-h-[60px] text-[20px] font-medium"
           />
+          {sentence && (
+            <div className="mt-3 flex items-start gap-2 border-t border-line pt-3">
+              <span className="mt-2 shrink-0 rounded-md bg-fill px-2 py-0.5 text-[12px] font-medium text-ink-2">純假名</span>
+              <TextArea
+                bare
+                minRows={1}
+                value={form.sentenceKana}
+                onChange={(e) => set('sentenceKana', e.target.value)}
+                placeholder="以空格分詞，例如：つぎ の えき で のりかえて ください。"
+                aria-label="純假名"
+                lang="ja"
+              />
+            </div>
+          )}
           <div className="mt-3 flex items-center gap-2 border-t border-line pt-3">
             <span className="shrink-0 rounded-md bg-fill px-2 py-0.5 text-[12px] font-medium text-ink-2">提示</span>
             <input
@@ -398,8 +461,8 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
         </EditorBlock>
 
         <EditorBlock
-          title="卡片背面"
-          action={speakButton(form.back, '朗讀背面')}
+          title={sentence ? '中文翻譯' : '卡片背面'}
+          action={!sentence && speakButton(backSpeechText(form.back), '朗讀背面', isJapanese ? JA : undefined)}
           onPickImage={(b) => set('backBlob', b)} error={backError} className="lg:row-span-2">
           <ImagePreview blob={form.backBlob} storedId={card?.backImage} onRemove={() => set('backBlob', null)} alt="背面圖片預覽" />
           <label htmlFor="card-back" className="sr-only">
@@ -411,18 +474,24 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
             minRows={7}
             value={form.back}
             onChange={(e) => set('back', e.target.value)}
-            placeholder="輸入你希望記憶的內容…"
+            placeholder={sentence ? '例如：請在下一站轉乘。' : '輸入你希望記憶的內容…'}
             aria-invalid={Boolean(backError)}
             className="min-h-[180px]"
           />
         </EditorBlock>
 
+        {sentence && (
+          <EditorBlock title="重要單字" optional>
+            <VocabularyRows rows={form.vocabulary} onChange={(rows) => set('vocabulary', rows)} />
+          </EditorBlock>
+        )}
+
         <EditorBlock
-          title="額外資訊"
+          title={sentence ? '文法解析' : '額外資訊'}
           optional
           action={
             <>
-              {speakButton(exampleSpeechText(form.extra), '朗讀例句')}
+              {!sentence && speakButton(exampleSpeechText(form.extra), '朗讀例句', isJapanese ? JA : undefined)}
               <button
                 type="button"
                 onClick={() => setExtraOpen((o) => !o)}
@@ -443,9 +512,26 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
             minRows={3}
             value={form.extra}
             onChange={(e) => set('extra', e.target.value)}
-            placeholder="例句、詞源、記憶技巧…（顯示答案時一併出現）"
-            aria-label="額外資訊"
+            placeholder={
+              sentence
+                ? '例如：「動詞て形＋ください」表示禮貌地請求對方做某件事。'
+                : '例句、詞源、記憶技巧…（顯示答案時一併出現）'
+            }
+            aria-label={sentence ? '文法解析' : '額外資訊'}
           />
+          {!sentence && (isJapanese || form.exampleKana) && (
+            <div className="border-t border-line pt-3">
+              <TextArea
+                bare
+                minRows={1}
+                value={form.exampleKana}
+                onChange={(e) => set('exampleKana', e.target.value)}
+                placeholder="例句假名（選填），例如：えきまで あるいて ごふんです。"
+                aria-label="例句假名"
+                lang="ja"
+              />
+            </div>
+          )}
         </EditorBlock>
       </div>
 
@@ -465,5 +551,45 @@ function Editor({ card, decks, tags }: { card: Flashcard | undefined; decks: Dec
         onChange={(ids) => set('tagIds', ids)}
       />
     </form>
+  )
+}
+
+/** Drops empty rows and trims the rest; undefined when nothing is left. */
+function cleanVocabulary(rows: SentenceWord[]): SentenceWord[] | undefined {
+  const kept = rows
+    .map((r) => ({ word: r.word.trim(), reading: r.reading.trim(), meaning: r.meaning.trim() }))
+    .filter((r) => r.word)
+  return kept.length ? kept : undefined
+}
+
+function VocabularyRows({ rows, onChange }: { rows: SentenceWord[]; onChange: (rows: SentenceWord[]) => void }) {
+  const update = (i: number, patch: Partial<SentenceWord>) => onChange(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)))
+  const input = 'min-h-10 min-w-0 rounded-[10px] bg-fill px-3 text-[15px] text-ink outline-none placeholder:text-ink-2/70'
+  return (
+    <div className="flex flex-col gap-2">
+      {rows.map((r, i) => (
+        <div key={i} className="flex items-center gap-1.5">
+          <input lang="ja" value={r.word} onChange={(e) => update(i, { word: e.target.value })} placeholder="單字" aria-label={`第 ${i + 1} 個單字`} className={clsx(input, 'w-[28%]')} />
+          <input lang="ja" value={r.reading} onChange={(e) => update(i, { reading: e.target.value })} placeholder="假名" aria-label={`第 ${i + 1} 個單字的假名`} className={clsx(input, 'w-[28%]')} />
+          <input value={r.meaning} onChange={(e) => update(i, { meaning: e.target.value })} placeholder="意思" aria-label={`第 ${i + 1} 個單字的意思`} className={clsx(input, 'flex-1')} />
+          <button
+            type="button"
+            onClick={() => onChange(rows.filter((_, j) => j !== i))}
+            aria-label={`刪除第 ${i + 1} 個單字`}
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-ink-2 hover:bg-fill-2 hover:text-ink"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...rows, { word: '', reading: '', meaning: '' }])}
+        className="flex min-h-10 items-center gap-1.5 self-start rounded-full px-1 text-[15px] font-medium text-tint"
+      >
+        <Plus size={18} />
+        新增單字
+      </button>
+    </div>
   )
 }

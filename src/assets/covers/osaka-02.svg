@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o02-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8EC5FF"/>
+      <stop offset="1" stop-color="#E3F1FF"/>
+    </linearGradient>
+    <linearGradient id="o02-train" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DDE5EF"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o02-bg)"/>
+  <!-- canopy roof -->
+  <path d="M0 30 H640 V58 H0 Z" fill="#4A5874"/>
+  <rect x="0" y="58" width="640" height="6" fill="#33405A"/>
+  <g fill="#5B6B88">
+    <rect x="96" y="64" width="10" height="200"/>
+    <rect x="534" y="64" width="10" height="200"/>
+  </g>
+  <!-- departure board -->
+  <rect x="200" y="64" width="6" height="22" fill="#33405A"/>
+  <rect x="434" y="64" width="6" height="22" fill="#33405A"/>
+  <rect x="180" y="84" width="280" height="96" rx="8" fill="#1B2333"/>
+  <g>
+    <rect x="196" y="98" width="40" height="14" rx="3" fill="#E5171F"/>
+    <rect x="244" y="98" width="120" height="14" rx="3" fill="#F5C842"/>
+    <rect x="372" y="98" width="72" height="14" rx="3" fill="#7DDA8C"/>
+    <rect x="196" y="124" width="40" height="14" rx="3" fill="#2F8CFF"/>
+    <rect x="244" y="124" width="96" height="14" rx="3" fill="#F5C842"/>
+    <rect x="372" y="124" width="72" height="14" rx="3" fill="#7DDA8C"/>
+    <rect x="196" y="150" width="40" height="14" rx="3" fill="#F28C28"/>
+    <rect x="244" y="150" width="108" height="14" rx="3" fill="#F5C842" opacity="0.7"/>
+    <rect x="372" y="150" width="72" height="14" rx="3" fill="#7DDA8C" opacity="0.7"/>
+  </g>
+  <!-- distant buildings -->
+  <g fill="#B9D2EE">
+    <rect x="0" y="170" width="60" height="50"/>
+    <rect x="560" y="160" width="80" height="60"/>
+  </g>
+  <!-- train arriving -->
+  <path d="M640 176 H300 Q250 176 240 220 V262 H640 Z" fill="url(#o02-train)"/>
+  <rect x="240" y="232" width="400" height="12" fill="#2FA84F"/>
+  <path d="M290 188 Q258 192 252 220 H290 Z" fill="#1B2A44"/>
+  <g fill="#1B2A44">
+    <rect x="316" y="192" width="50" height="30" rx="5"/>
+    <rect x="390" y="192" width="50" height="30" rx="5"/>
+    <rect x="530" y="192" width="50" height="30" rx="5"/>
+  </g>
+  <rect x="458" y="186" width="54" height="72" rx="4" fill="#C3CDDB"/>
+  <circle cx="262" cy="244" r="6" fill="#FFE27A"/>
+  <g stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.8">
+    <path d="M200 200 H160 M210 220 H140 M200 240 H170"/>
+  </g>
+  <!-- platform -->
+  <rect x="0" y="262" width="640" height="98" fill="#A3ABB8"/>
+  <rect x="0" y="262" width="640" height="6" fill="#C8CED8"/>
+  <rect x="0" y="286" width="640" height="14" fill="#F5C842"/>
+  <g stroke="#D9A92A" stroke-width="2">
+    <path d="M0 293 H640"/>
+  </g>
+  <!-- bench -->
+  <rect x="60" y="316" width="110" height="10" rx="3" fill="#2F8CFF"/>
+  <rect x="70" y="326" width="6" height="20" fill="#5B6B88"/>
+  <rect x="154" y="326" width="6" height="20" fill="#5B6B88"/>
+</svg>

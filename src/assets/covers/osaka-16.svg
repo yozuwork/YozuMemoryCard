@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o16-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7EC0F5"/>
+      <stop offset="1" stop-color="#E6F4FF"/>
+    </linearGradient>
+    <linearGradient id="o16-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B9AE9C"/>
+      <stop offset="1" stop-color="#8E8473"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o16-sky)"/>
+  <g fill="#FFFFFF" opacity="0.85"><ellipse cx="120" cy="70" rx="54" ry="15"/><ellipse cx="148" cy="58" rx="30" ry="15"/></g>
+  <!-- Tsutenkaku-style tower in distance -->
+  <g fill="#9DB0CC">
+    <path d="M532 250 L548 120 H572 L588 250 H574 L560 160 L546 250 Z"/>
+    <rect x="538" y="104" width="44" height="26" rx="3"/>
+    <rect x="552" y="78" width="16" height="28"/>
+    <rect x="558" y="58" width="4" height="22"/>
+  </g>
+  <rect x="540" y="112" width="40" height="6" fill="#C9D6E8"/>
+  <!-- trees -->
+  <g fill="#6FAE5A">
+    <circle cx="60" cy="250" r="40"/><circle cx="110" cy="260" r="34"/><circle cx="500" cy="262" r="36"/><circle cx="600" cy="256" r="40"/>
+  </g>
+  <!-- stone wall base -->
+  <path d="M150 300 L190 214 H450 L490 300 Z" fill="url(#o16-wall)"/>
+  <g stroke="#7A705F" stroke-width="2" fill="none" opacity="0.7">
+    <path d="M178 240 H462 M166 266 H474 M156 288 H484"/>
+    <path d="M230 214 V240 M290 214 V240 M350 214 V240 M410 214 V240 M200 240 V266 M260 240 V266 M320 240 V266 M380 240 V266 M440 240 V266 M230 266 V288 M290 266 V288 M350 266 V288 M410 266 V288"/>
+  </g>
+  <!-- castle tiers -->
+  <rect x="220" y="182" width="200" height="32" fill="#F4F2EC"/>
+  <path d="M196 186 Q320 168 444 186 L420 172 H220 Z" fill="#3E7A6E"/>
+  <rect x="240" y="146" width="160" height="28" fill="#F4F2EC"/>
+  <path d="M216 150 Q320 132 424 150 L400 136 H240 Z" fill="#3E7A6E"/>
+  <rect x="258" y="112" width="124" height="26" fill="#F4F2EC"/>
+  <path d="M236 116 Q320 100 404 116 L382 102 H258 Z" fill="#3E7A6E"/>
+  <rect x="278" y="80" width="84" height="24" fill="#F4F2EC"/>
+  <path d="M258 84 Q320 70 382 84 L362 70 H278 Z" fill="#3E7A6E"/>
+  <path d="M290 72 L320 50 L350 72 Z" fill="#3E7A6E"/>
+  <!-- gold accents -->
+  <g fill="#E8C66A">
+    <path d="M296 54 l-6 -10 l10 4 z"/><path d="M344 54 l6 -10 l-10 4 z"/>
+    <rect x="300" y="88" width="40" height="6" rx="2"/>
+    <rect x="290" y="120" width="60" height="5" rx="2"/>
+  </g>
+  <!-- windows -->
+  <g fill="#3E4A5C">
+    <rect x="236" y="192" width="16" height="12"/><rect x="266" y="192" width="16" height="12"/><rect x="358" y="192" width="16" height="12"/><rect x="388" y="192" width="16" height="12"/>
+    <rect x="258" y="154" width="14" height="12"/><rect x="286" y="154" width="14" height="12"/><rect x="340" y="154" width="14" height="12"/><rect x="368" y="154" width="14" height="12"/>  </g>
+  <path d="M300 214 V196 Q320 184 340 196 V214 Z" fill="#3E4A5C"/>
+  <!-- moat -->
+  <rect x="0" y="300" width="640" height="60" fill="#5A9BC9"/>
+  <g fill="#FFFFFF" opacity="0.5"><rect x="80" y="318" width="80" height="3" rx="1.5"/><rect x="300" y="330" width="120" height="3" rx="1.5"/><rect x="500" y="316" width="70" height="3" rx="1.5"/></g>
+</svg>

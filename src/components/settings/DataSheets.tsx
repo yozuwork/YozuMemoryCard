@@ -7,7 +7,16 @@ import { Skeleton } from '../ui/Controls'
 import { useSnapshots } from '../../hooks/useData'
 import type { StorageInfo } from '../../hooks/useStorageInfo'
 import { db } from '../../db/schema'
-import { createSnapshot, ImportError, importBackup, importDelimited, readSnapshot, type BackupFile } from '../../db/backup'
+import {
+  countTableRows,
+  createSnapshot,
+  ImportError,
+  importBackup,
+  importDelimited,
+  parseBackup,
+  readSnapshot,
+  type BackupFile,
+} from '../../db/backup'
 import { ensureDeck } from '../../db/repo'
 import { formatBytes, formatDateTime } from '../../lib/time'
 import type { CloudBackupMeta } from '../../lib/cloud'
@@ -102,10 +111,34 @@ export type PendingImport =
   | { kind: 'backup'; file: BackupFile; name: string }
   | { kind: 'table'; text: string; rows: number; name: string }
 
+/** Reads a picked file into something ImportSheet can confirm; throws ImportError with a readable message. */
+export async function readImportFile(file: File): Promise<PendingImport> {
+  const text = await file.text()
+  if (/\.json$/i.test(file.name) || file.type === 'application/json') {
+    let raw: unknown
+    try {
+      raw = JSON.parse(text)
+    } catch {
+      throw new ImportError('檔案不是有效的 JSON')
+    }
+    return { kind: 'backup', file: parseBackup(raw), name: file.name }
+  }
+  if (/\.(csv|tsv|txt)$/i.test(file.name)) {
+    const rows = countTableRows(text)
+    if (!rows) throw new ImportError('找不到可匯入的資料列（每列至少需要兩欄）')
+    return { kind: 'table', text, rows, name: file.name }
+  }
+  throw new ImportError('不支援的檔案格式，請選擇 .json、.csv 或 .tsv')
+}
+
+/** File types the import pickers accept. */
+export const IMPORT_ACCEPT = '.json,.csv,.tsv,.txt,application/json,text/csv,text/tab-separated-values'
+
 export function ImportSheet({ pending, onClose, decks }: { pending: PendingImport | null; onClose: () => void; decks: Deck[] }) {
   const [deckId, setDeckId] = useState<string>('')
   const [busy, setBusy] = useState(false)
   const targetDeck = deckId || decks[0]?.id || ''
+  const isDeckFile = pending?.kind === 'backup' && pending.file.scope === 'deck'
 
   async function runBackup(mode: 'merge' | 'replace') {
     if (pending?.kind !== 'backup') return
@@ -123,7 +156,9 @@ export function ImportSheet({ pending, onClose, decks }: { pending: PendingImpor
       if (mode === 'replace') await createSnapshot('匯入前自動備份', getSettings())
       const r = await importBackup(pending.file, mode)
       if (mode === 'replace') applyImportedSettings(pending.file.settings)
-      toast(`已匯入 ${r.decks} 個牌組、${r.cards} 張卡片`, { tone: 'success' })
+      toast(isDeckFile ? `已匯入「${pending.file.decks[0]?.name}」，共 ${r.cards} 張卡片` : `已匯入 ${r.decks} 個牌組、${r.cards} 張卡片`, {
+        tone: 'success',
+      })
       onClose()
     } catch (e) {
       console.error(e)
@@ -153,23 +188,39 @@ export function ImportSheet({ pending, onClose, decks }: { pending: PendingImpor
       {pending?.kind === 'backup' && (
         <>
           <ListSection title={pending.name}>
-            <ListRow label="牌組" value={pending.file.decks.length} />
+            {isDeckFile ? (
+              <ListRow label="牌組" value={pending.file.decks[0]?.name} />
+            ) : (
+              <ListRow label="牌組" value={pending.file.decks.length} />
+            )}
             <ListRow label="卡片" value={pending.file.cards.length} />
+            <ListRow label="複習紀錄" value={pending.file.reviews.length} />
             <ListRow label="標籤" value={pending.file.tags.length} />
             <ListRow label="圖片" value={pending.file.media.length} />
             <ListRow label="匯出時間" value={formatDateTime(pending.file.exportedAt)} />
           </ListSection>
-          <div className="flex flex-col gap-2.5">
-            <Button variant="brand" size="lg" fullWidth disabled={busy} onClick={() => void runBackup('merge')}>
-              合併到現有資料
-            </Button>
-            <Button variant="danger" size="lg" fullWidth disabled={busy} onClick={() => void runBackup('replace')}>
-              取代所有資料
-            </Button>
-            <p className="px-2 text-center text-[13px] leading-relaxed text-ink-2">
-              合併：同一張卡片以備份內容為準，其餘資料保留。
-            </p>
-          </div>
+          {isDeckFile ? (
+            <div className="flex flex-col gap-2.5">
+              <Button variant="brand" size="lg" fullWidth disabled={busy} onClick={() => void runBackup('merge')}>
+                匯入這個牌組
+              </Button>
+              <p className="px-2 text-center text-[13px] leading-relaxed text-ink-2">
+                卡片與學習進度一起匯入；若已有同一個牌組，會以檔案內容更新。其他牌組不受影響。
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              <Button variant="brand" size="lg" fullWidth disabled={busy} onClick={() => void runBackup('merge')}>
+                合併到現有資料
+              </Button>
+              <Button variant="danger" size="lg" fullWidth disabled={busy} onClick={() => void runBackup('replace')}>
+                取代所有資料
+              </Button>
+              <p className="px-2 text-center text-[13px] leading-relaxed text-ink-2">
+                合併：同一張卡片以備份內容為準，其餘資料保留。
+              </p>
+            </div>
+          )}
         </>
       )}
 

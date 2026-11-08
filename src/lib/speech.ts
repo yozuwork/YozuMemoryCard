@@ -65,6 +65,19 @@ export function exampleSpeechText(text: string): string {
   return text.replace(/（[^）]*）/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+/** Reads only the reading before the dash, not the meaning after it: "しんかんせん — 新幹線" → "しんかんせん" */
+export function backSpeechText(text: string): string {
+  const [reading] = text.split(/\s[—–]\s/)
+  return exampleSpeechText(reading.trim() ? reading : text)
+}
+
+/** false only when the browser has listed its voices and none speaks `lang`. */
+export function hasVoiceFor(lang: string): boolean {
+  if (!isSpeechSupported()) return false
+  const voices = window.speechSynthesis.getVoices()
+  return voices.length === 0 || Boolean(pickVoice(lang))
+}
+
 export function stopSpeaking() {
   if (isSpeechSupported()) window.speechSynthesis.cancel()
 }

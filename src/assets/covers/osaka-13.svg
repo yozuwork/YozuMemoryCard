@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o13-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A3F7A"/>
+      <stop offset="0.6" stop-color="#C77A9A"/>
+      <stop offset="1" stop-color="#FFC48A"/>
+    </linearGradient>
+    <linearGradient id="o13-card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3D4B66"/>
+      <stop offset="1" stop-color="#1B2333"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o13-sky)"/>
+  <circle cx="110" cy="70" r="20" fill="#FFF4CC" opacity="0.9"/>
+  <g fill="#FFFFFF" opacity="0.7"><circle cx="200" cy="40" r="1.6"/><circle cx="520" cy="30" r="1.6"/><circle cx="600" cy="70" r="1.4"/></g>
+  <!-- background towers -->
+  <g fill="#5A4A78" opacity="0.8">
+    <rect x="20" y="170" width="60" height="110"/>
+    <rect x="560" y="150" width="70" height="130"/>
+  </g>
+  <!-- hotel -->
+  <rect x="190" y="50" width="200" height="230" fill="#4A4F7A"/>
+  <rect x="180" y="40" width="220" height="16" fill="#353A60"/>
+  <g fill="#FFD27A">
+    <rect x="208" y="72" width="26" height="20"/><rect x="246" y="72" width="26" height="20" opacity="0.4"/><rect x="284" y="72" width="26" height="20"/><rect x="322" y="72" width="26" height="20"/><rect x="360" y="72" width="16" height="20" opacity="0.4"/>
+    <rect x="208" y="108" width="26" height="20" opacity="0.4"/><rect x="246" y="108" width="26" height="20"/><rect x="284" y="108" width="26" height="20"/><rect x="322" y="108" width="26" height="20" opacity="0.4"/><rect x="360" y="108" width="16" height="20"/>
+    <rect x="208" y="144" width="26" height="20"/><rect x="246" y="144" width="26" height="20"/><rect x="284" y="144" width="26" height="20" opacity="0.4"/><rect x="322" y="144" width="26" height="20"/><rect x="360" y="144" width="16" height="20"/>
+    <rect x="208" y="180" width="26" height="20"/><rect x="246" y="180" width="26" height="20" opacity="0.4"/><rect x="284" y="180" width="26" height="20"/><rect x="322" y="180" width="26" height="20"/><rect x="360" y="180" width="16" height="20" opacity="0.4"/>
+  </g>
+  <rect x="236" y="220" width="108" height="10" fill="#C9A24A"/>
+  <rect x="256" y="230" width="68" height="50" fill="#FFE2A8"/>
+  <rect x="289" y="230" width="2" height="50" fill="#C9A24A"/>
+  <!-- ground -->
+  <rect x="0" y="280" width="640" height="80" fill="#3B3256"/>
+  <!-- bed -->
+  <g transform="translate(410 176)">
+    <rect x="0" y="0" width="14" height="110" rx="4" fill="#8B5A2B"/>
+    <rect x="10" y="50" width="200" height="40" rx="8" fill="#FFFFFF"/>
+    <rect x="80" y="44" width="130" height="46" rx="8" fill="#7FB0E0"/>
+    <rect x="80" y="44" width="130" height="10" rx="5" fill="#A9CCEE"/>
+    <ellipse cx="44" cy="44" rx="30" ry="14" fill="#F4F7FB"/>
+    <rect x="10" y="88" width="200" height="16" rx="4" fill="#A8713A"/>
+    <rect x="196" y="60" width="14" height="50" rx="4" fill="#8B5A2B"/>
+  </g>
+  <!-- key card -->
+  <g transform="rotate(-14 110 250)">
+    <rect x="50" y="210" width="130" height="82" rx="10" fill="url(#o13-card)"/>
+    <rect x="50" y="232" width="130" height="10" fill="#C9A24A"/>
+    <circle cx="150" cy="268" r="12" fill="none" stroke="#C9A24A" stroke-width="3"/>
+    <rect x="66" y="260" width="50" height="8" rx="4" fill="#8A97AD"/>
+  </g>
+  <!-- bellhop bell -->
+  <g transform="translate(110 150)">
+    <path d="M0 40 A36 36 0 0 1 72 40 Z" fill="#E8C66A"/>
+    <rect x="-6" y="40" width="84" height="8" rx="3" fill="#B88A2A"/>
+    <circle cx="36" cy="0" r="5" fill="#B88A2A"/>
+  </g>
+</svg>

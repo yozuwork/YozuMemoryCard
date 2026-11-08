@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Clock3, Layers, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Clock3, Download, Layers, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useCards, useDecks, useTags } from '../hooks/useData'
 import { useNow } from '../hooks/useEnvironment'
 import { useSettings } from '../store/settings'
 import { confirmDialog, toast } from '../store/ui'
 import { deleteDeck } from '../db/repo'
+import { backupFilename, downloadBlob, exportDeckBlob } from '../db/backup'
 import { computeDeckStats } from '../lib/deckStats'
 import { NoteBrowser } from '../components/notes/NoteBrowser'
 import { DeckFormDialog } from '../components/deck/DeckFormDialog'
@@ -44,6 +45,17 @@ export function DeckDetailPage() {
 
   const stats = computeDeckStats(cards ?? [], now, dayStartHour)
 
+  async function exportDeck() {
+    if (!deck) return
+    try {
+      downloadBlob(await exportDeckBlob(deck.id), backupFilename(deck.name))
+      toast(`已匯出「${deck.name}」與學習進度`, { tone: 'success' })
+    } catch (e) {
+      console.error(e)
+      toast('匯出失敗', { tone: 'error' })
+    }
+  }
+
   async function remove() {
     if (!deck) return
     const ok = await confirmDialog({
@@ -72,7 +84,8 @@ export function DeckDetailPage() {
         showDeckOnCards={false}
         showDeckFilter={false}
         menuItems={[
-          { label: '編輯牌組', icon: <Pencil size={18} />, separated: true, onSelect: () => setEditOpen(true) },
+          { label: '匯出這個牌組', icon: <Download size={18} />, separated: true, onSelect: () => void exportDeck() },
+          { label: '編輯牌組', icon: <Pencil size={18} />, onSelect: () => setEditOpen(true) },
           { label: '刪除牌組', icon: <Trash2 size={18} />, destructive: true, onSelect: () => void remove() },
         ]}
         emptyState={

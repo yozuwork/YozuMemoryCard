@@ -1,4 +1,4 @@
-import { ChartColumn, Clock3, List, Settings, SquarePen, Swords, Tag } from 'lucide-react'
+import { ChartColumn, Clock3, Layers, List, Settings, SquarePen, Swords, Tag } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface NavItem {
@@ -11,15 +11,16 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { to: '/review', label: '複習', icon: Clock3, match: ['/review', '/stats'] },
-  { to: '/character', label: '角色', icon: Swords, match: ['/character'] },
+  { to: '/decks', label: '牌組', icon: Layers, match: ['/decks'] },
   { to: '/record', label: '記錄', icon: SquarePen, match: ['/record'] },
-  { to: '/notes', label: '筆記', icon: List, match: ['/notes', '/decks'] },
+  { to: '/notes', label: '筆記', icon: List, match: ['/notes'] },
   { to: '/tags', label: '標籤', icon: Tag, match: ['/tags'] },
   { to: '/settings', label: '選項', icon: Settings, match: ['/settings'] },
 ]
 
-/** Extra destination only shown in the desktop sidebar (phones reach it from 複習). */
+/** Extra destinations only shown in the desktop sidebar (phones reach them from 複習). */
 export const statsNavItem: NavItem = { to: '/stats', label: '統計', icon: ChartColumn, match: ['/stats'] }
+export const characterNavItem: NavItem = { to: '/character', label: '角色', icon: Swords, match: ['/character'] }
 
 export function isActive(item: NavItem, pathname: string): boolean {
   return item.match.some((p) => pathname === p || pathname.startsWith(`${p}/`))

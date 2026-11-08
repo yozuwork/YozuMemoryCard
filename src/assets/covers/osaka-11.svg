@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="o11-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD1DC"/>
+      <stop offset="1" stop-color="#FFF0E6"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#o11-bg)"/>
+  <!-- shop front -->
+  <rect x="60" y="40" width="520" height="220" fill="#FFF8F0"/>
+  <g>
+    <path d="M40 40 H600 V94 H40 Z" fill="#E5587A"/>
+    <path d="M40 94 Q75 116 110 94 Q145 116 180 94 Q215 116 250 94 Q285 116 320 94 Q355 116 390 94 Q425 116 460 94 Q495 116 530 94 Q565 116 600 94 Z" fill="#E5587A"/>
+    <g fill="#FFFFFF" opacity="0.9">
+      <rect x="110" y="40" width="70" height="54"/><rect x="250" y="40" width="70" height="54"/><rect x="390" y="40" width="70" height="54"/><rect x="530" y="40" width="70" height="54"/>
+    </g>
+  </g>
+  <!-- display windows -->
+  <rect x="90" y="124" width="200" height="136" rx="6" fill="#BFE0F5"/>
+  <rect x="350" y="124" width="200" height="136" rx="6" fill="#BFE0F5"/>
+  <g fill="#FFFFFF" opacity="0.5">
+    <path d="M110 124 L150 124 L100 210 L90 210 L90 160 Z"/>
+    <path d="M370 124 L410 124 L360 210 L350 210 L350 160 Z"/>
+  </g>
+  <g>
+    <rect x="130" y="200" width="40" height="60" rx="4" fill="#7FB0E0"/>
+    <circle cx="210" cy="220" r="26" fill="#F5C842"/>
+    <rect x="390" y="190" width="50" height="70" rx="6" fill="#C59BFF"/>
+    <rect x="460" y="214" width="56" height="46" rx="6" fill="#7DDA8C"/>
+  </g>
+  <rect x="0" y="260" width="640" height="100" fill="#D8C4B4"/>
+  <rect x="0" y="260" width="640" height="8" fill="#E8D8CA"/>
+  <!-- shopping bags -->
+  <g transform="translate(150 186)">
+    <path d="M24 30 Q24 0 50 0 Q76 0 76 30" fill="none" stroke="#2B364C" stroke-width="6"/>
+    <rect x="0" y="28" width="100" height="120" rx="6" fill="#2F8CFF"/>
+    <rect x="0" y="28" width="100" height="18" fill="#1F6FD0"/>
+    <circle cx="50" cy="94" r="20" fill="#FFFFFF" opacity="0.85"/>
+  </g>
+  <g transform="translate(240 210)">
+    <path d="M20 26 Q20 0 42 0 Q64 0 64 26" fill="none" stroke="#2B364C" stroke-width="6"/>
+    <rect x="0" y="24" width="84" height="100" rx="6" fill="#F28C28"/>
+    <path d="M0 60 H84 V76 H0 Z" fill="#FFFFFF" opacity="0.7"/>
+  </g>
+  <g transform="translate(330 198)">
+    <path d="M22 28 Q22 0 46 0 Q70 0 70 28" fill="none" stroke="#2B364C" stroke-width="6"/>
+    <rect x="0" y="26" width="92" height="110" rx="6" fill="#2FA84F"/>
+    <path d="M30 70 l16 -16 l16 16 l-16 16 z" fill="#FFFFFF" opacity="0.85"/>
+  </g>
+  <!-- price tag -->
+  <g transform="rotate(18 500 200)">
+    <path d="M440 170 H540 L566 200 L540 230 H440 Z" fill="#F5C842"/>
+    <circle cx="540" cy="200" r="8" fill="#FFF0E6"/>
+    <rect x="456" y="186" width="56" height="10" rx="5" fill="#B88A2A"/>
+    <rect x="456" y="204" width="40" height="10" rx="5" fill="#E5394A"/>
+    <path d="M548 200 Q580 180 600 196" fill="none" stroke="#8A6A2A" stroke-width="2"/>
+  </g>
+  <!-- percent badge (tax free motif) -->
+  <circle cx="520" cy="300" r="30" fill="#E5394A"/>
+  <circle cx="508" cy="290" r="6" fill="#FFFFFF"/>
+  <circle cx="532" cy="310" r="6" fill="#FFFFFF"/>
+  <rect x="517" y="280" width="6" height="40" rx="3" fill="#FFFFFF" transform="rotate(35 520 300)"/>
+</svg>

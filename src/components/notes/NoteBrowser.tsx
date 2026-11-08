@@ -212,7 +212,7 @@ export function NoteBrowser({
           </GlassButton>
         }
         trailing={
-          <div className="glass flex h-11 items-center rounded-full shadow-[0_2px_10px_rgb(0_0_0/0.06)]">
+          <div className="glass relative z-30 flex h-11 items-center rounded-full shadow-[0_2px_10px_rgb(0_0_0/0.06)]">
             <Menu
               label="更多操作"
               items={moreItems}
