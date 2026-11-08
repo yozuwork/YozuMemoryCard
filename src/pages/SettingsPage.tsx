@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import clsx from 'clsx'
-import { ChartColumn, CloudUpload, LogIn, LogOut, Download, HardDrive, History, Info, Monitor, Moon, RotateCcw, Sun, Trash2, Upload, Volume2 } from 'lucide-react'
+import { ChartColumn, Download, HardDrive, History, Info, Monitor, Moon, RotateCcw, Sun, Trash2, Upload, Volume2 } from 'lucide-react'
 import { useDecks } from '../hooks/useData'
 import { useStorageInfo } from '../hooks/useStorageInfo'
 import { useSpeech } from '../hooks/useSpeech'
@@ -18,7 +18,6 @@ import { ListRow, ListSection } from '../components/ui/List'
 import { Segmented, Slider, Stepper, Switch } from '../components/ui/Controls'
 import { SelectRow } from '../components/settings/SelectRow'
 import {
-  CloudSheet,
   IMPORT_ACCEPT,
   ImportSheet,
   readImportFile,
@@ -27,8 +26,6 @@ import {
   type PendingImport,
 } from '../components/settings/DataSheets'
 import { LogoMark } from '../components/brand/Logo'
-import { Avatar } from '../components/account/Avatar'
-import { useAccount } from '../store/account'
 
 const orderOptions: { value: StudyOrder; label: string }[] = [
   { value: 'review-first', label: '複習後再學習新卡片' },
@@ -40,14 +37,12 @@ const hourOptions = Array.from({ length: 24 }, (_, h) => ({ value: h, label: `${
 
 export function SettingsPage() {
   const s = useSettings()
-  const account = useAccount()
   const decks = useDecks()
   const { info, requestPersist, refresh } = useStorageInfo()
   const { say, supported: speechSupported } = useSpeech()
   const fileRef = useRef<HTMLInputElement>(null)
   const [storageOpen, setStorageOpen] = useState(false)
   const [snapshotsOpen, setSnapshotsOpen] = useState(false)
-  const [cloudOpen, setCloudOpen] = useState(false)
   const [pending, setPending] = useState<PendingImport | null>(null)
   const [exporting, setExporting] = useState(false)
 
@@ -131,30 +126,6 @@ export function SettingsPage() {
         trailing={<GlassButton onClick={() => void resetSettings()}>還原系統預設</GlassButton>}
       />
 
-      {/* 帳號 */}
-      <ListSection title="帳號" footer="登入 Google 帳號後，可把資料備份到雲端，換裝置時還原。">
-        {account.user ? (
-          <>
-            <ListRow icon={<Avatar user={account.user} size={30} />} label={account.user.displayName ?? '已登入'} detail={account.user.email ?? undefined} />
-            <ListRow
-              icon={<LogOut size={21} className="text-danger" />}
-              label="登出"
-              destructive
-              disabled={account.busy}
-              onClick={() => void account.signOut()}
-            />
-          </>
-        ) : (
-          <ListRow
-            icon={<LogIn size={21} className="text-tint" />}
-            label={account.user === undefined ? '載入中…' : '使用 Google 登入'}
-            tint
-            disabled={account.busy || account.user === undefined}
-            onClick={() => void account.signIn()}
-          />
-        )}
-      </ListSection>
-
       {/* 資料 */}
       <ListSection
         title={
@@ -197,14 +168,6 @@ export function SettingsPage() {
           tint
           chevron
           onClick={() => setSnapshotsOpen(true)}
-        />
-        <ListRow
-          icon={<CloudUpload size={21} className="text-tint" />}
-          label="雲端備份"
-          tint
-          detail={account.user ? '上傳或還原雲端上的資料' : '登入後即可使用'}
-          chevron
-          onClick={() => setCloudOpen(true)}
         />
         <input
           ref={fileRef}
@@ -358,11 +321,6 @@ export function SettingsPage() {
 
       <StorageSheet open={storageOpen} onClose={() => setStorageOpen(false)} info={info} onPersist={requestPersist} />
       <SnapshotsSheet open={snapshotsOpen} onClose={() => setSnapshotsOpen(false)} />
-      <CloudSheet
-        open={cloudOpen}
-        onClose={() => setCloudOpen(false)}
-        onRestore={(file) => setPending({ kind: 'backup', file, name: '雲端備份' })}
-      />
       <ImportSheet pending={pending} onClose={() => setPending(null)} decks={decks ?? []} />
     </div>
   )
