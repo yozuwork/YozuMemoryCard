@@ -78,8 +78,37 @@ export function hasVoiceFor(lang: string): boolean {
   return voices.length === 0 || Boolean(pickVoice(lang))
 }
 
+// Keep a strong reference until completion; WebKit can otherwise lose callbacks.
+let activeUtterance: SpeechSynthesisUtterance | undefined
+let finishActive: (() => void) | undefined
+let unlocked = false
+
+/** Must run synchronously inside a tap/key handler, before any async work. */
+export function unlockSpeech() {
+  if (!isSpeechSupported() || unlocked) return
+  const synth = window.speechSynthesis
+  if (synth.speaking || synth.pending) return
+  const utterance = new SpeechSynthesisUtterance(' ')
+  utterance.volume = 0
+  activeUtterance = utterance
+  utterance.onend = () => {
+    if (activeUtterance === utterance) activeUtterance = undefined
+  }
+  utterance.onerror = () => {
+    unlocked = false
+    if (activeUtterance === utterance) activeUtterance = undefined
+  }
+  synth.speak(utterance)
+  unlocked = true
+}
+
 export function stopSpeaking() {
-  if (isSpeechSupported()) window.speechSynthesis.cancel()
+  if (!isSpeechSupported()) return
+  const synth = window.speechSynthesis
+  // Avoid resetting an idle iPhone speech engine before its first utterance.
+  if (synth.speaking || synth.pending || activeUtterance) synth.cancel()
+  finishActive?.()
+  activeUtterance = undefined
 }
 
 export interface SpeakOptions {
@@ -93,15 +122,24 @@ export function speak(text: string, { rate, order, lang }: SpeakOptions): Promis
   const clean = text.replace(/\s+/g, ' ').trim()
   if (!isSpeechSupported() || !clean) return Promise.resolve()
   const synth = window.speechSynthesis
-  synth.cancel()
+  stopSpeaking()
   return new Promise((resolve) => {
     const u = new SpeechSynthesisUtterance(clean)
     u.lang = lang ?? detectLanguage(clean, order)
     const voice = pickVoice(u.lang)
     if (voice) u.voice = voice
     u.rate = Math.min(2, Math.max(0.5, rate))
-    u.onend = () => resolve()
-    u.onerror = () => resolve()
+    activeUtterance = u
+    const finish = () => {
+      if (activeUtterance === u) {
+        activeUtterance = undefined
+        finishActive = undefined
+      }
+      resolve()
+    }
+    finishActive = finish
+    u.onend = finish
+    u.onerror = finish
     synth.speak(u)
     // Some Chromium builds pause long queues; resume() is a harmless nudge.
     if (synth.paused) synth.resume()

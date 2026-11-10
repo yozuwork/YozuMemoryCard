@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { hasVoiceFor, isSpeechSupported, speak, stopSpeaking } from '../lib/speech'
+import { hasVoiceFor, isSpeechSupported, speak, stopSpeaking, unlockSpeech } from '../lib/speech'
 import { useSettings } from '../store/settings'
 
 export function useSpeech() {
@@ -17,7 +17,19 @@ export function useSpeech() {
     [rate, order],
   )
 
-  useEffect(() => () => stopSpeaking(), [])
+  useEffect(() => {
+    // Capture the gesture before React effects or database reads lose it on iOS.
+    const unlock = (event: Event) => {
+      if (event.isTrusted) unlockSpeech()
+    }
+    document.addEventListener('click', unlock, true)
+    document.addEventListener('keydown', unlock, true)
+    return () => {
+      document.removeEventListener('click', unlock, true)
+      document.removeEventListener('keydown', unlock, true)
+      stopSpeaking()
+    }
+  }, [])
 
   return { say, speaking, supported: isSpeechSupported(), stop: stopSpeaking }
 }
@@ -28,6 +40,7 @@ export function useVoiceAvailable(lang: string): boolean {
   useEffect(() => {
     if (!isSpeechSupported()) return
     const check = () => setAvailable(hasVoiceFor(lang))
+    check()
     window.speechSynthesis.addEventListener('voiceschanged', check)
     return () => window.speechSynthesis.removeEventListener('voiceschanged', check)
   }, [lang])

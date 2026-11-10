@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { db } from '../db/schema'
-import { speak, stopSpeaking } from '../lib/speech'
+import { speak, stopSpeaking, unlockSpeech } from '../lib/speech'
 import { backSpeech, frontSpeech } from '../lib/japaneseCard'
 import { getSettings } from './settings'
 
@@ -59,6 +59,7 @@ export const usePlayer = create<PlayerStore>()((set, get) => {
     currentText: '',
     start: (ids, from = 0) => {
       if (ids.length === 0) return
+      unlockSpeech()
       const token = ++runToken
       set({ queue: ids, index: from, playing: true })
       void run(token)
@@ -71,6 +72,7 @@ export const usePlayer = create<PlayerStore>()((set, get) => {
         stopSpeaking()
         set({ playing: false })
       } else {
+        unlockSpeech()
         const token = ++runToken
         set({ playing: true })
         void run(token)
@@ -87,6 +89,7 @@ export const usePlayer = create<PlayerStore>()((set, get) => {
         return
       }
       if (playing) {
+        unlockSpeech()
         const token = ++runToken
         void run(token)
       }
